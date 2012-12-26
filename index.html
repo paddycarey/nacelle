@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Nacelle : A simple lightweight microframework built on top of webapp2/jinja for Google AppEngine" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Nacelle</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/paddycarey/nacelle">View on GitHub</a>
+
+          <h1 id="project_title">Nacelle</h1>
+          <h2 id="project_tagline">A simple lightweight microframework built on top of webapp2/jinja for Google AppEngine</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/paddycarey/nacelle/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/paddycarey/nacelle/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>Nacelle Microframework</h1>
+
+<p>Nacelle is a simple python microframework for Google Appengine designed to stay out of your way and let you get to the fun stuff as quickly as possible.</p>
+
+<p>Webapp2 is awesome, but doesn't quite do enough and you usually end up spending substantial time building scaffolding.  Django's fantastic but sometimes feels like it tries to do too much and has gotten too heavy for my typical use case.  Nacelle's designed to fill this gap, all the beauty and simplicity of webapp2 with a heavy dose of inspiration from Django.</p>
+
+<p>Nacelle includes the following libraries (see lib folder for license details):</p>
+
+<pre><code>- Jinja2 for templating support
+- WTForms for djangoforms style forms support
+- Markdown for markdown parsing support
+- simplejson for json parsing/encoding
+- unidecode for extra unicode support
+- raven for support for reporting errors to a sentry server
+</code></pre>
+
+<p>One of the main goals of Nacelle is to encourage code reuse by enabling pluggable apps that can be reused across multiple projects.  Nacelle makes very few assumptions about your code and only requires that you do one or two things to use it.</p>
+
+<p>Nacelle includes some extra features (for which I'll add documentation later) like base models and handlers which incorporate full version control.  And some convenient decorators to allow fr things like derived properties on your models.</p>
+
+<h2>Instructions:</h2>
+
+<p>Clone this repository
+    <a href="mailto:git@github.com">git@github.com</a>:paddycarey/nacelle.git</p>
+
+<p>Copy the <code>nacelle</code> folder, <code>settings.py.example</code> and <code>app.yaml.example</code> to your project's root directory.  Rename and edit the .example files appropriately, the only required setting in settings.py is <code>ROUTES</code>, which should be a list of routes modules for any apps you wish to activate.</p>
+
+<pre><code>`Examples to follow`
+</code></pre>
+
+<h2>Models:</h2>
+
+<p>Nacelle provides a JSONModel which allows storage of arbitrary JSON objects in the appengine datastore.  It provides 2-way conversion of JSON objects to suitable datastore properties which can then be accessed in the normal ways using the appengine datastore API.</p>
+
+<pre><code>&gt;&gt;&gt; from nacelle.models import JSONModel
+
+&gt;&gt;&gt; j = JSONModel()
+&gt;&gt;&gt; j.json = {'test_str':'some string', 'test_int':123, 'test_date':"2007-01-25T12:00:00Z", 'test_geopt':{'lat':4.567, 'lon':7.432}, 'test_list':['key:ahRkZXZ-d2Fja3dhY2stbmFjZWxsZXIPCxIJSlNPTk1vZGVsGAEM','key:ahRkZXZ-d2Fja3dhY2stbmFjZWxsZXIPCxIJSlNPTk1vZGVsGAIM', 'key:ahRkZXZ-d2Fja3dhY2stbmFjZWxsZXIPCxIJSlNPTk1vZGVsGAMM']}
+&gt;&gt;&gt; j.put()
+
+&gt;&gt;&gt; db.to_dict(j)
+{'test_geopt': datastore_types.GeoPt(4.567, 7.432), 'test_str': 'some string', 'test_list': [datastore_types.Key.from_path(u'JSONModel', 1L, _app=u'dev~wackwack-nacelle'), datastore_types.Key.from_path(u'JSONModel', 2L, _app=u'dev~wackwack-nacelle'), datastore_types.Key.from_path(u'JSONModel', 3L, _app=u'dev~wackwack-nacelle')], 'test_date': datetime.datetime(2007, 1, 25, 12, 0, tzinfo=&lt;iso8601.iso8601.Utc object at 0x98d7a6c&gt;), 'test_int': 123}
+</code></pre>
+
+<p>Other than that, you get a pretty standard appengine python environment, all familiar and cuddly, what's not to love?</p>
+
+<p>All original code is ISC licensed, included libraries may have a different license which is indicated in their source.</p>
+
+<p>Copyright (c) 2012, Patrick Carey</p>
+
+<p>Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Nacelle maintained by <a href="https://github.com/paddycarey">paddycarey</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
