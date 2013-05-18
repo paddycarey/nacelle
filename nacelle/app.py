@@ -1,21 +1,39 @@
+"""
+Main WSGI entry point to Nacelle
+"""
+# marty mc fly imports
+from __future__ import absolute_import
+
 # stdlib imports
-import os
 import sys
 
 # third-party imports
 import webapp2
 
 # local imports
-import settings
+from nacelle.conf import settings
 
-# Add lib directory to path
-sys.path.insert(0, os.path.join(settings.PROJECT_ROOT, 'nacelle', 'lib'))
+# add vendor folder to the path so that we can load the modules it contains
+sys.path.insert(0, settings.VENDOR_PATH)
 
-import routes
+
+# use webapp2's import_string function to lazily import required modules for
+# WSGI config
+routes = webapp2.import_string(settings.ROUTES_MODULE)
+dispatcher = webapp2.import_string(settings.DISPATCHER_MODULE)
+error_handler = webapp2.import_string(settings.ERROR_HANDLER_MODULE)
+secret_key_store = webapp2.import_string('nacelle.core.sessions.models.SecretKey')
 
 # Define our WSGI app so GAE can run it
-wsgi = webapp2.WSGIApplication(
-    routes.ROUTES,
-    debug=settings.DEBUG,
-    config=settings.WSGI_CONFIG
-)
+wsgi = webapp2.WSGIApplication(routes, debug=True, config={
+    'webapp2_extras.sessions': {
+        'secret_key': secret_key_store.get_key(),
+    },
+    'webapp2_extras.jinja2': {
+        'globals': settings.JINJA_GLOBALS,
+    }
+})
+
+# attach dispatcher and error_handler to the WSGI app
+wsgi.router.set_dispatcher(dispatcher)
+wsgi.error_handlers[500] = error_handler
