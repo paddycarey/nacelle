@@ -1,0 +1,6 @@
+# Indexes for photobooth are managed manually and will
+# never be automatically generated, makes it easier to
+# deal with appengine clobbering index files for different users
+
+indexes:
+

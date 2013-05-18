@@ -1,0 +1,2 @@
+# Only thing we need to ignore are any generated .pyc files, simples
+*.pyc

@@ -1,0 +1,66 @@
+{# import required macros #}
+{% import 'cms/macros/forms.html' as form_macros %}
+{% import 'cms/macros/misc_helpers.html' as misc_helpers %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        {# CMS branding/meta information is set in cms/settings.py #}
+        <meta name="description" content="{{ cms_description|default('Nacelle CMS') }}">
+        <meta name="author" content="{{ cms_author|default('Nacelle CMS') }}">
+        <title>{{ cms_branding|default('Nacelle CMS') }}</title>
+
+        {# include css from external template #}
+        {% include 'cms/base/css.html' %}
+        {# block to allow defining additional css in sub-templates #}
+        {% block extra_css %}{% endblock %}
+
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+          <script src="/static/admin/js/html5shiv.js"></script>
+        <![endif]-->
+
+    </head>
+
+    <body>
+
+        {# fixed-top bootstrap style navbar #}
+        {% include 'cms/partials/nav-top.html' %}
+
+        <div class="container">
+
+            {# display flash messages as bootstrap alerts #}
+            {% for message in session.get_flashes() %}
+                <div class="alert">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    {{ message[0] }}
+                </div>
+            {% endfor %}
+
+            {# block containing main cms content (all sub-templates should override at least this block) #}
+            <div class="row">
+                {% block cms_content %}
+                {% endblock %}
+            </div>
+
+            {# footer displayed on all CMS pages #}
+            {% include 'cms/partials/footer.html' %}
+
+        </div>
+
+        {# javascript controllable popup in bottom left corner of screen #}
+        {% include 'cms/partials/popup.html' %}
+
+        {# include javascript from external template #}
+        {% include 'cms/base/javascript.html' %}
+        {# block to allow defining additional javascript in sub-templates #}
+        {% block extra_javascript %}{% endblock %}
+
+    </body>
+
+</html>

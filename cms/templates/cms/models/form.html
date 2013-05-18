@@ -1,0 +1,50 @@
+{% extends 'cms/base/base.html' %}
+
+
+{% block cms_content %}
+
+    <div class="span12">
+
+        {#######################################
+            Custom header for this form view
+        #######################################}
+
+        <h1><i class="{{ header_config['icon'] }}"></i> {{ header_config['title'] }}</h1>
+        <br>
+
+        {##########################################
+            A custom help message for this view
+        ##########################################}
+
+        {{ misc_helpers.alert(header_config['text']) }}
+
+        {#################################
+            Display form for this view
+        #################################}
+
+        {{ form_macros.render_form(form, success_url) }}
+
+    </div>
+
+{% endblock%}
+
+{% block extra_javascript %}
+
+    {# ckeditor for WYSIWYG rich text editors on forms #}
+    <script src="/static/lib/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript">
+
+        window.onload = function() {
+            CKEDITOR.replaceAll( 'form-rich-text' );
+        };
+
+        $(document).ready(function(){
+            // Popover
+            $('.icon-question-sign').popover({
+                trigger: "hover"
+            });
+        });
+
+    </script>
+
+{% endblock %}

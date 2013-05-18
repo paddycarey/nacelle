@@ -1,0 +1,48 @@
+{% macro render_field(field, size='xlarge') %}
+    {% if field.id != 'csrf_token' %}
+    <div class="control-group {% if field.errors %}error{% endif %}">
+        <label class="control-label" for="{{ field.id }}">{{ field.label }}</label>
+        <div class="controls">
+            {% set input_class = "input input-" + size %}
+            {{ field(class=input_class)}}
+            {% if field.description %}
+            <span class="help-block">{{ field.description }}</span>
+            {% endif %}
+            {% if field.errors %}
+                <span class="help-block">
+                    <ul class="form-errors">
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    </ul>
+                </span>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+{% endmacro %}
+
+
+{% macro render_form(form, cancel_url, form_header=None) %}
+<form class="form-horizontal" method="POST">
+
+    <fieldset>
+
+        {{ form.csrf_token }}
+
+        {% if form_header %}
+            <legend>{{ form_header }}</legend>
+        {% endif %}
+
+        {% for field in form %}
+            {{ render_field(field) }}
+        {% endfor %}
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" value="edit" name="action"><i class="icon-ok"></i> Save</button>
+          <a type="button" class="btn" href="{{ cancel_url }}"><i class="icon-remove"></i> Cancel</a>
+        </div>
+    </fieldset>
+
+</form>
+{% endmacro %}
