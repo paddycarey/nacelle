@@ -16,7 +16,7 @@ def setup_environ():
     """
 
     # add the lib directory to the sytem path
-    sys.path.insert(0, os.path.join(ROOT_PATH, 'vendor'))
+    sys.path.insert(0, os.path.join(ROOT_PATH, 'nacelle', 'vendor'))
 
     # Find the path on which the SDK is installed
     sdk_path = None
