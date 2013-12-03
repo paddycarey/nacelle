@@ -1,5 +1,5 @@
 """
-Test nacelle's settings handling
+Test nacelle's authentication decorators
 """
 # stdlib imports
 import os
