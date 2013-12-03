@@ -36,6 +36,7 @@ ERROR_HANDLER_MODULE = 'nacelle.core.exception_handlers.handle_500'
 
 # path to which third-party libraries have been installed
 VENDOR_PATH = os.path.join(ROOT_DIR, 'nacelle', 'vendor')
+ADDITIONAL_VENDOR_PATHS = ()
 
 # variables/functions to inject into any jinja template
 JINJA_GLOBALS = {'uri_for': webapp2.uri_for, 'logout_url': users.create_logout_url}
