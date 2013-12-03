@@ -32,8 +32,3 @@ def setup_environ():
     # Use dev_appserver to set up the python path
     from dev_appserver import fix_sys_path
     fix_sys_path()
-
-    # add third-party libs to path
-    sys.path.insert(0, os.path.join(sdk_path, 'lib', 'jinja2-2.6'))
-    sys.path.insert(0, os.path.join(sdk_path, 'lib', 'webapp2-2.5.2'))
-    sys.path.insert(0, os.path.join(sdk_path, 'lib', 'webob-1.2.3'))
