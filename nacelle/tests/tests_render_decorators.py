@@ -25,11 +25,32 @@ def r_jinja2(request):
     return {'rendered_with': 'Jinja2'}
 
 
+@render_jinja2('index.html')
+def r_jinja2_r(request):
+    """Test fixture to allow testing of @render_jinja2 decorator
+    """
+    return webapp2.Response('success')
+
+
 @render_json
 def r_json(request):
     """Test fixture to allow testing of @render_json decorator
     """
     return {'rendered_as': 'json'}
+
+
+@render_json
+def r_json_r(request):
+    """Test fixture to allow testing of @render_json decorator
+    """
+    return webapp2.Response('success')
+
+
+@render_json
+def r_json_err(request):
+    """Test fixture to allow testing of @render_json decorator
+    """
+    return webapp2.abort(405)
 
 
 @render_handlebars('index.html')
@@ -39,8 +60,15 @@ def r_handlebars(request):
     return {'rendered_with': 'Handlebars'}
 
 
+@render_handlebars('index.html')
+def r_handlebars_r(request):
+    """Test fixture to allow testing of @render_handlebars decorator
+    """
+    return webapp2.Response('success')
+
+
 # Define our WSGI app so GAE can run it
-routes = [('/r_jinja2', r_jinja2), ('/r_json', r_json), ('/r_handlebars', r_handlebars)]
+routes = [('/r_jinja2', r_jinja2), ('/r_json', r_json), ('/r_handlebars', r_handlebars), ('/r_jinja2_r', r_jinja2_r), ('/r_json_err', r_json_err), ('/r_json_r', r_json_r), ('/r_handlebars_r', r_handlebars_r)]
 wsgi = webapp2.WSGIApplication(routes, debug=True, config={
     'webapp2_extras.sessions': {'secret_key': 'xxxxxxxxxxxxxxxxxxxxxx'}
 })
@@ -59,6 +87,13 @@ class RenderHandlebarsDecoratorTests(NacelleTestCase):
         self.assertEqual(200, response.status_int)
         self.assertIn('This template was rendered with Handlebars.', response.body)
 
+    def test_render_handlebars_override_response(self):
+        """Test that a webapp2.Response is rendered when explicitly returned from a handlebars handler
+        """
+        response = wsgi.get_response('/r_handlebars_r')
+        self.assertEqual(200, response.status_int)
+        self.assertEqual('success', response.body)
+
 
 class RenderJinja2DecoratorTests(NacelleTestCase):
 
@@ -69,6 +104,13 @@ class RenderJinja2DecoratorTests(NacelleTestCase):
         self.assertEqual(200, response.status_int)
         self.assertIn('This template was rendered with Jinja2.', response.body)
 
+    def test_render_jinja2_override_response(self):
+        """Test that a webapp2.Response is rendered when explicitly returned from a jinja2 handler
+        """
+        response = wsgi.get_response('/r_jinja2_r')
+        self.assertEqual(200, response.status_int)
+        self.assertEqual('success', response.body)
+
 
 class RenderJsonDecoratorTests(NacelleTestCase):
 
@@ -78,3 +120,17 @@ class RenderJsonDecoratorTests(NacelleTestCase):
         response = wsgi.get_response('/r_json')
         self.assertEqual(200, response.status_int)
         self.assertDictEqual({'rendered_as': 'json'}, json.loads(response.body))
+
+    def test_render_json_error(self):
+        """Test that an error response is correctly rendered whena  JSON handler is aborted
+        """
+        response = wsgi.get_response('/r_json_err')
+        self.assertEqual(405, response.status_int)
+        self.assertDictEqual({u'error': u'405 Method Not Allowed'}, json.loads(response.body))
+
+    def test_render_json_override_response(self):
+        """Test that a webapp2.Response is rendered when explicitly returned from a json handler
+        """
+        response = wsgi.get_response('/r_json_r')
+        self.assertEqual(200, response.status_int)
+        self.assertEqual('success', response.body)
