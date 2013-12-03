@@ -26,7 +26,7 @@ except KeyError:
 SENTRY_DSN = None
 
 # Python dotted path to the routes for the app
-ROUTES_MODULE = 'app.routes.ROUTES'
+ROUTES_MODULE = 'app.ROUTES'
 
 # Python dotted path to the default dispatcher for the app
 DISPATCHER_MODULE = 'nacelle.core.dispatcher.nacelle_dispatcher'
