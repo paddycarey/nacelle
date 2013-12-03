@@ -115,14 +115,27 @@ def login_admin(view_method):
     return _arguments_wrapper
 
 
+def login_cron(view_method):
+    """
+    Decorator that ensures handler is only available to cronjobs
+    """
+    def _arguments_wrapper(request, *args, **kwargs) :
+        # check caller is authorised
+        if not users.is_current_user_admin() and not 'X-Appengine-Cron' in request.headers:
+            return webapp2.abort(401, detail="Only cronjobs or admin users can access this URL")
+        # call the view function
+        return view_method(request, *args, **kwargs)
+    return _arguments_wrapper
+
+
 def login_task(view_method):
     """
-    Decorator that ensures handler is only avail to task queues
+    Decorator that ensures handler is only available to task queues
     """
     def _arguments_wrapper(request, *args, **kwargs) :
         # check caller is authorised
         if not users.is_current_user_admin() and not 'X-AppEngine-TaskName' in request.headers:
-            return webapp2.abort(401, detail="Only taskqueues or admin users can access URL")
+            return webapp2.abort(401, detail="Only taskqueues or admin users can access this URL")
         # call the view function
         return view_method(request, *args, **kwargs)
     return _arguments_wrapper
