@@ -1,7 +1,9 @@
 nacelle microframework
 ======================
 
-nacelle probably isn't what you would normally define as a framework. nacelle could more accurately (but less succinctly) be described as a highly opinionated application skeleton, built with webapp2 for use on Google Appengine.
+[![Build Status](https://travis-ci.org/rehabstudio/nacelle.png?branch=master)](https://travis-ci.org/rehabstudio/nacelle)
+
+A lightweight microframework built on top of webapp2 for use on Google Appengine
 
 <strong>NOTE:</strong> Before reading any further, if you need portability from appengine or a relational database then nacelle probably isn't for you, use CloudSQL and Django, you'll thank me later.
 
