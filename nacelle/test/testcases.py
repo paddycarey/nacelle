@@ -28,9 +28,9 @@ class NacelleTestCase(TestCase):
         if not skipped:
             try:
                 self._pre_setup()
-            except (KeyboardInterrupt, SystemExit):
+            except (KeyboardInterrupt, SystemExit):  # pragma: no cover
                 raise
-            except Exception:
+            except Exception:  # pragma: no cover
                 result.addError(self, sys.exc_info())
                 return
 
@@ -41,9 +41,9 @@ class NacelleTestCase(TestCase):
         if not skipped:
             try:
                 self._post_teardown()
-            except (KeyboardInterrupt, SystemExit):
+            except (KeyboardInterrupt, SystemExit):  # pragma: no cover
                 raise
-            except Exception:
+            except Exception:  # pragma: no cover
                 result.addError(self, sys.exc_info())
                 return
 
