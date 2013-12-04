@@ -1,0 +1,17 @@
+# Config file for automatic testing at travis-ci.org
+
+language: python
+
+python:
+  - "2.7"
+
+# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
+install: pip install -r requirements.txt
+
+before_script:
+  - wget http://googleappengine.googlecode.com/files/google_appengine_1.8.8.zip -nv
+  - unzip -q google_appengine_1.8.8.zip
+  - sudo ln -s `pwd`/google_appengine/dev_appserver.py /usr/local/bin/dev_appserver.py
+
+# command to run tests, e.g. python setup.py test
+script: ./testrunner.py

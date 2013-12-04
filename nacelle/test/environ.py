@@ -24,7 +24,7 @@ def setup_environ():
     if test_path is None:
         print "ERROR: Can't find sppengine SDK on your PATH"
         sys.exit(1)
-    sdk_path = os.path.dirname(test_path)
+    sdk_path = os.path.dirname(os.readlink(test_path) if os.path.islink(test_path) else test_path)
 
     # add the SDK path to the system path
     sys.path.insert(0, sdk_path)
