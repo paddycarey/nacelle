@@ -9,9 +9,10 @@ python:
 install: pip install -r requirements.txt
 
 before_script:
+  - mkdir -p .vendors
   - wget http://googleappengine.googlecode.com/files/google_appengine_1.8.8.zip -nv
-  - unzip -q google_appengine_1.8.8.zip
-  - sudo ln -s `pwd`/google_appengine/dev_appserver.py /usr/local/bin/dev_appserver.py
+  - unzip -qd .vendors google_appengine_1.8.8.zip
+  - sudo ln -s `pwd`/.vendors/google_appengine/dev_appserver.py /usr/local/bin/dev_appserver.py
 
 # command to run tests, e.g. python setup.py test
 script: ./testrunner.py
