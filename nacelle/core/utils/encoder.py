@@ -35,4 +35,5 @@ class ModelEncoder(json.JSONEncoder):
         if isinstance(obj, (datetime.date, datetime.datetime)):
             return obj.isoformat()
 
+        # Let the base class default method raise the TypeError
         return super(ModelEncoder, self).default(obj)
