@@ -37,11 +37,10 @@ Thanks!
 
 The following libraries are included by default:
 
-- [webapp2](http://webapp-improved.appspot.com/)
-- [jinja2](http://jinja.pocoo.org/docs/)
 - [raven](https://github.com/getsentry/raven-python)
 - [pybars](https://launchpad.net/pybars)
 - [pymeta](https://launchpad.net/pymeta)
+- [wtforms](http://wtforms.simplecodes.com/)
 
 
 License
