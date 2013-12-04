@@ -15,3 +15,7 @@ before_script:
 
 # command to run tests, e.g. python setup.py test
 script: ./testrunner.py
+
+# report coverage to coveralls after succesful build
+after_success:
+  - coveralls
