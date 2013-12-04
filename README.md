@@ -2,6 +2,7 @@ nacelle microframework
 ======================
 
 [![Build Status](https://travis-ci.org/rehabstudio/nacelle.png?branch=master)](https://travis-ci.org/rehabstudio/nacelle)
+[![Coverage Status](https://coveralls.io/repos/rehabstudio/nacelle/badge.png)](https://coveralls.io/r/rehabstudio/nacelle)
 
 A lightweight microframework built on top of webapp2 for use on Google Appengine
 
