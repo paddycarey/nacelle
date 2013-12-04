@@ -21,7 +21,7 @@ def setup_environ():
 
     # Find the path on which the SDK is installed
     test_path = distutils.spawn.find_executable('dev_appserver.py')
-    if test_path is None:
+    if test_path is None:  # pragma: no cover
         print "ERROR: Can't find sppengine SDK on your PATH"
         sys.exit(1)
     sdk_path = os.path.dirname(os.readlink(test_path) if os.path.islink(test_path) else test_path)
