@@ -2,6 +2,7 @@
 Test nacelle's authentication decorators
 """
 # stdlib imports
+import datetime
 import json
 
 # third-party imports
@@ -40,6 +41,13 @@ def r_json(request):
 
 
 @render_json
+def r_json_dt(request):
+    """Test fixture to allow testing of @render_json decorator
+    """
+    return {'rendered_as': datetime.datetime(2013, 01, 01, 00, 00, 00)}
+
+
+@render_json
 def r_json_r(request):
     """Test fixture to allow testing of @render_json decorator
     """
@@ -68,7 +76,7 @@ def r_handlebars_r(request):
 
 
 # Define our WSGI app so GAE can run it
-routes = [('/r_jinja2', r_jinja2), ('/r_json', r_json), ('/r_handlebars', r_handlebars), ('/r_jinja2_r', r_jinja2_r), ('/r_json_err', r_json_err), ('/r_json_r', r_json_r), ('/r_handlebars_r', r_handlebars_r)]
+routes = [('/r_jinja2', r_jinja2), ('/r_json_dt', r_json_dt), ('/r_json', r_json), ('/r_handlebars', r_handlebars), ('/r_jinja2_r', r_jinja2_r), ('/r_json_err', r_json_err), ('/r_json_r', r_json_r), ('/r_handlebars_r', r_handlebars_r)]
 wsgi = webapp2.WSGIApplication(routes, debug=True, config={
     'webapp2_extras.sessions': {'secret_key': 'xxxxxxxxxxxxxxxxxxxxxx'}
 })
@@ -120,6 +128,13 @@ class RenderJsonDecoratorTests(NacelleTestCase):
         response = wsgi.get_response('/r_json')
         self.assertEqual(200, response.status_int)
         self.assertDictEqual({'rendered_as': 'json'}, json.loads(response.body))
+
+    def test_render_json_dt(self):
+        """Test rendering a JSON response containing a datetime object
+        """
+        response = wsgi.get_response('/r_json_dt')
+        self.assertEqual(200, response.status_int)
+        self.assertDictEqual({u'rendered_as': u'2013-01-01T00:00:00'}, json.loads(response.body))
 
     def test_render_json_error(self):
         """Test that an error response is correctly rendered whena  JSON handler is aborted
