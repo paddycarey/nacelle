@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nacelle.core.template.renderers &mdash; Nacelle Microframework 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Nacelle Microframework 0.1.0 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Nacelle Microframework 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for nacelle.core.template.renderers</h1><div class="highlight"><pre>
+<span class="c"># third-party imports</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">webapp2</span>
+<span class="kn">from</span> <span class="nn">webapp2_extras</span> <span class="kn">import</span> <span class="n">jinja2</span>
+
+<span class="c"># local imports</span>
+<span class="kn">from</span> <span class="nn">nacelle.core.template.loaders</span> <span class="kn">import</span> <span class="n">load_handlebars_template</span>
+
+
+<span class="k">def</span> <span class="nf">_get_handlebars_compiler</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get an instance of a handlebars compiler, from the app registry of</span>
+<span class="sd">    instantiating when required.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">app</span> <span class="o">=</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">get_app</span><span class="p">()</span>
+    <span class="c"># Check if the instance is already registered.</span>
+    <span class="n">compiler</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;handlebars_compiler&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">compiler</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Compiler not cached, loading&#39;</span><span class="p">)</span>
+        <span class="n">compiler</span> <span class="o">=</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">import_string</span><span class="p">(</span><span class="s">&#39;pybars.Compiler&#39;</span><span class="p">)()</span>
+        <span class="c"># Register the instance in the registry.</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">registry</span><span class="p">[</span><span class="s">&#39;handlebars_compiler&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">compiler</span>
+    <span class="k">return</span> <span class="n">compiler</span>
+
+
+<span class="k">def</span> <span class="nf">_compile_handlebars_template</span><span class="p">(</span><span class="n">template_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compile and cache a handlebars template in the app registry</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">app</span> <span class="o">=</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">get_app</span><span class="p">()</span>
+    <span class="c"># Check if the instance is already registered.</span>
+    <span class="n">compiled_template</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;compiled-template-</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">template_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">compiled_template</span><span class="p">:</span>
+        <span class="n">template_string</span> <span class="o">=</span> <span class="n">load_handlebars_template</span><span class="p">(</span><span class="n">template_name</span><span class="p">)</span>
+        <span class="n">compiler</span> <span class="o">=</span> <span class="n">_get_handlebars_compiler</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Template not cached, compiling: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">template_name</span><span class="p">)</span>
+        <span class="n">compiled_template</span> <span class="o">=</span> <span class="n">compiler</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">template_string</span><span class="p">)</span>
+        <span class="c"># Register the instance in the registry.</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">registry</span><span class="p">[</span><span class="s">&#39;compiled-template-</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">template_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">compiled_template</span>
+    <span class="k">return</span> <span class="n">compiled_template</span>
+
+
+<span class="k">def</span> <span class="nf">_get_jinja_renderer</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get a jinja2 renderer, cached in the app registry</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">app</span> <span class="o">=</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">get_app</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">jinja2</span><span class="o">.</span><span class="n">get_jinja2</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="render_handlebars_template"><a class="viewcode-back" href="../../../../nacelle.core.template.html#nacelle.core.template.renderers.render_handlebars_template">[docs]</a><span class="k">def</span> <span class="nf">render_handlebars_template</span><span class="p">(</span><span class="n">template_name</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Renders a handlebars template with the given context</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">compiled_template</span> <span class="o">=</span> <span class="n">_compile_handlebars_template</span><span class="p">(</span><span class="n">template_name</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">compiled_template</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">unicode</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="render_jinja2_template"><a class="viewcode-back" href="../../../../nacelle.core.template.html#nacelle.core.template.renderers.render_jinja2_template">[docs]</a><span class="k">def</span> <span class="nf">render_jinja2_template</span><span class="p">(</span><span class="n">template_name</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Renders a jinja2 template with the given context</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">renderer</span> <span class="o">=</span> <span class="n">_get_jinja_renderer</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">renderer</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="n">template_name</span><span class="p">,</span> <span class="o">**</span><span class="n">context</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Nacelle Microframework 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Carey.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b3.
+    </div>
+  </body>
+</html>

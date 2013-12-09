@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nacelle.core.utils package &mdash; Nacelle Microframework 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Nacelle Microframework 0.1.0 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Nacelle Microframework 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="nacelle-core-utils-package">
+<h1>nacelle.core.utils package<a class="headerlink" href="#nacelle-core-utils-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-nacelle.core.utils.crypto">
+<span id="nacelle-core-utils-crypto-module"></span><h2>nacelle.core.utils.crypto module<a class="headerlink" href="#module-nacelle.core.utils.crypto" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="nacelle.core.utils.crypto.get_random_string">
+<tt class="descclassname">nacelle.core.utils.crypto.</tt><tt class="descname">get_random_string</tt><big>(</big><em>length=12</em>, <em>allowed_chars='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'</em><big>)</big><a class="reference internal" href="_modules/nacelle/core/utils/crypto.html#get_random_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.core.utils.crypto.get_random_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a securely generated random string.</p>
+<p>The default length of 12 with the a-z, A-Z, 0-9 character set returns
+a 71-bit value. log_2((26+26+10)^12) =~ 71 bits</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-nacelle.core.utils.encoder">
+<span id="nacelle-core-utils-encoder-module"></span><h2>nacelle.core.utils.encoder module<a class="headerlink" href="#module-nacelle.core.utils.encoder" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nacelle.core.utils.encoder.ModelEncoder">
+<em class="property">class </em><tt class="descclassname">nacelle.core.utils.encoder.</tt><tt class="descname">ModelEncoder</tt><big>(</big><em>skipkeys=False</em>, <em>ensure_ascii=True</em>, <em>check_circular=True</em>, <em>allow_nan=True</em>, <em>sort_keys=False</em>, <em>indent=None</em>, <em>separators=None</em>, <em>encoding='utf-8'</em>, <em>default=None</em><big>)</big><a class="reference internal" href="_modules/nacelle/core/utils/encoder.html#ModelEncoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.core.utils.encoder.ModelEncoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">json.encoder.JSONEncoder</span></tt></p>
+<p>Custom JSON encoder allowing easy encoding
+of appengine ndb entities/queries to JSON.</p>
+<dl class="method">
+<dt id="nacelle.core.utils.encoder.ModelEncoder.default">
+<tt class="descname">default</tt><big>(</big><em>obj</em><big>)</big><a class="reference internal" href="_modules/nacelle/core/utils/encoder.html#ModelEncoder.default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.core.utils.encoder.ModelEncoder.default" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-nacelle.core.utils.exceptions">
+<span id="nacelle-core-utils-exceptions-module"></span><h2>nacelle.core.utils.exceptions module<a class="headerlink" href="#module-nacelle.core.utils.exceptions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="nacelle.core.utils.exceptions.retry_on_exception">
+<tt class="descclassname">nacelle.core.utils.exceptions.</tt><tt class="descname">retry_on_exception</tt><big>(</big><em>exception_to_check</em>, <em>tries=4</em>, <em>delay=0.5</em>, <em>backoff=2</em><big>)</big><a class="reference internal" href="_modules/nacelle/core/utils/exceptions.html#retry_on_exception"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.core.utils.exceptions.retry_on_exception" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retry calling the decorated function using an exponential backoff.</p>
+<p>exception_to_check (Exception/tuple): the exception(s) to check
+tries (int): number of times to try before giving up
+delay (int/float): initial delay between retries in seconds
+backoff (int/float): backoff multiplier</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-nacelle.core.utils.memoize">
+<span id="nacelle-core-utils-memoize-module"></span><h2>nacelle.core.utils.memoize module<a class="headerlink" href="#module-nacelle.core.utils.memoize" title="Permalink to this headline">¶</a></h2>
+<p>Simple cache utilities for nacelle</p>
+<dl class="function">
+<dt id="nacelle.core.utils.memoize.memoize">
+<tt class="descclassname">nacelle.core.utils.memoize.</tt><tt class="descname">memoize</tt><big>(</big><em>cache_prefix</em>, <em>cache_time=None</em><big>)</big><a class="reference internal" href="_modules/nacelle/core/utils/memoize.html#memoize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.core.utils.memoize.memoize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator that caches output of the decorated function, using a hash of its parameters as a cache key</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-nacelle.core.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-nacelle.core.utils" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">nacelle.core.utils package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-nacelle.core.utils.crypto">nacelle.core.utils.crypto module</a></li>
+<li><a class="reference internal" href="#module-nacelle.core.utils.encoder">nacelle.core.utils.encoder module</a></li>
+<li><a class="reference internal" href="#module-nacelle.core.utils.exceptions">nacelle.core.utils.exceptions module</a></li>
+<li><a class="reference internal" href="#module-nacelle.core.utils.memoize">nacelle.core.utils.memoize module</a></li>
+<li><a class="reference internal" href="#module-nacelle.core.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/nacelle.core.utils.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Nacelle Microframework 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Carey.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b3.
+    </div>
+  </body>
+</html>

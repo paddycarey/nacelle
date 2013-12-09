@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nacelle.tests.tests_auth_decorators &mdash; Nacelle Microframework 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Nacelle Microframework 0.1.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Nacelle Microframework 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for nacelle.tests.tests_auth_decorators</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Test nacelle&#39;s authentication decorators</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># stdlib imports</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c"># third-party imports</span>
+<span class="kn">import</span> <span class="nn">webapp2</span>
+
+<span class="c"># local imports</span>
+<span class="kn">from</span> <span class="nn">nacelle.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">nacelle.core.decorators</span> <span class="kn">import</span> <span class="n">login_admin</span>
+<span class="kn">from</span> <span class="nn">nacelle.core.decorators</span> <span class="kn">import</span> <span class="n">login_cron</span>
+<span class="kn">from</span> <span class="nn">nacelle.core.decorators</span> <span class="kn">import</span> <span class="n">login_task</span>
+<span class="kn">from</span> <span class="nn">nacelle.test.testcases</span> <span class="kn">import</span> <span class="n">NacelleTestCase</span>
+
+
+<span class="c"># convenience fucntions to make logging a user in or out easier</span>
+
+<div class="viewcode-block" id="setCurrentUser"><a class="viewcode-back" href="../../../nacelle.tests.html#nacelle.tests.tests_auth_decorators.setCurrentUser">[docs]</a><span class="k">def</span> <span class="nf">setCurrentUser</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">is_admin</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convenience function to mock a logged in user</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;USER_EMAIL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">email</span> <span class="ow">or</span> <span class="s">&#39;&#39;</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;USER_ID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user_id</span> <span class="ow">or</span> <span class="s">&#39;&#39;</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;USER_IS_ADMIN&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;1&#39;</span> <span class="k">if</span> <span class="n">is_admin</span> <span class="k">else</span> <span class="s">&#39;0&#39;</span>
+</div>
+<div class="viewcode-block" id="logoutCurrentUser"><a class="viewcode-back" href="../../../nacelle.tests.html#nacelle.tests.tests_auth_decorators.logoutCurrentUser">[docs]</a><span class="k">def</span> <span class="nf">logoutCurrentUser</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Set currently mocked login to None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">setCurrentUser</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+
+<span class="c"># test fixtures: we need to set up a local wsgi app so we can test the login</span>
+<span class="c"># decorators against real handlers</span>
+</div>
+<span class="nd">@login_admin</span>
+<span class="k">def</span> <span class="nf">t_admin</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Test fixture to allow testing of @login_admin decorator</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="s">&#39;success&#39;</span><span class="p">)</span>
+
+
+<span class="nd">@login_cron</span>
+<span class="k">def</span> <span class="nf">t_cron</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Test fixture to allow testing of @login_cron decorator</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="s">&#39;success&#39;</span><span class="p">)</span>
+
+
+<span class="nd">@login_task</span>
+<span class="k">def</span> <span class="nf">t_task</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Test fixture to allow testing of @login_task decorator</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="s">&#39;success&#39;</span><span class="p">)</span>
+
+
+<span class="c"># Define our WSGI app so GAE can run it</span>
+<span class="n">routes</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;/t_admin&#39;</span><span class="p">,</span> <span class="n">t_admin</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;/t_cron&#39;</span><span class="p">,</span> <span class="n">t_cron</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;/t_task&#39;</span><span class="p">,</span> <span class="n">t_task</span><span class="p">)]</span>
+<span class="n">wsgi</span> <span class="o">=</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">WSGIApplication</span><span class="p">(</span><span class="n">routes</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="p">{</span>
+    <span class="s">&#39;webapp2_extras.sessions&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;secret_key&#39;</span><span class="p">:</span> <span class="s">&#39;xxxxxxxxxxxxxxxxxxxxxx&#39;</span><span class="p">}</span>
+<span class="p">})</span>
+
+<span class="c"># attach dispatcher and error_handler to the WSGI app</span>
+<span class="n">dispatcher</span> <span class="o">=</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">import_string</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DISPATCHER_MODULE</span><span class="p">)</span>
+<span class="n">wsgi</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">set_dispatcher</span><span class="p">(</span><span class="n">dispatcher</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="LoginCronDecoratorTests"><a class="viewcode-back" href="../../../nacelle.tests.html#nacelle.tests.tests_auth_decorators.LoginCronDecoratorTests">[docs]</a><span class="k">class</span> <span class="nc">LoginCronDecoratorTests</span><span class="p">(</span><span class="n">NacelleTestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="LoginCronDecoratorTests.test_cron_decorator_unauthed_user"><a class="viewcode-back" href="../../../nacelle.tests.html#nacelle.tests.tests_auth_decorators.LoginCronDecoratorTests.test_cron_decorator_unauthed_user">[docs]</a>    <span class="k">def</span> <span class="nf">test_cron_decorator_unauthed_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that an unauthed user cannot access a protected cron URL</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">wsgi</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="s">&#39;/t_cron&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">401</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_int</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LoginCronDecoratorTests.test_cron_decorator_authed_admin"><a class="viewcode-back" href="../../../nacelle.tests.html#nacelle.tests.tests_auth_decorators.LoginCronDecoratorTests.test_cron_decorator_authed_admin">[docs]</a>    <span class="k">def</span> <span class="nf">test_cron_decorator_authed_admin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that an authed user (with admin rights) can access a protected cron URL</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">setCurrentUser</span><span class="p">(</span><span class="s">&#39;test@test.com&#39;</span><span class="p">,</span> <span class="s">&#39;1234567890&#39;</span><span class="p">,</span> <span class="n">is_admin</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">wsgi</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="s">&#39;/t_cron&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_int</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s">&#39;success&#39;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+        <span class="n">logoutCurrentUser</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="LoginCronDecoratorTests.test_cron_decorator_authed_user"><a class="viewcode-back" href="../../../nacelle.tests.html#nacelle.tests.tests_auth_decorators.LoginCronDecoratorTests.test_cron_decorator_authed_user">[docs]</a>    <span class="k">def</span> <span class="nf">test_cron_decorator_authed_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that an authed user (without admin rights) cannot access a protected cron URL</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">setCurrentUser</span><span class="p">(</span><span class="s">&#39;test@test.com&#39;</span><span class="p">,</span> <span class="s">&#39;1234567890&#39;</span><span class="p">,</span> <span class="n">is_admin</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">wsgi</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="s">&#39;/t_cron&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">401</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_int</span><span class="p">)</span>
+        <span class="n">logoutCurrentUser</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="LoginCronDecoratorTests.test_cron_decorator_cronjob"><a class="viewcode-back" href="../../../nacelle.tests.html#nacelle.tests.tests_auth_decorators.LoginCronDecoratorTests.test_cron_decorator_cronjob">[docs]</a>    <span class="k">def</span> <span class="nf">test_cron_decorator_cronjob</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that a cronjob request can access a protected cron URL</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">wsgi</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="s">&#39;/t_cron&#39;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;X-Appengine-Cron&#39;</span><span class="p">,</span> <span class="s">&#39;true&#39;</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_int</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s">&#39;success&#39;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="LoginTaskDecoratorTests"><a class="viewcode-back" href="../../../nacelle.tests.html#nacelle.tests.tests_auth_decorators.LoginTaskDecoratorTests">[docs]</a><span class="k">class</span> <span class="nc">LoginTaskDecoratorTests</span><span class="p">(</span><span class="n">NacelleTestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="LoginTaskDecoratorTests.test_task_decorator_unauthed_user"><a class="viewcode-back" href="../../../nacelle.tests.html#nacelle.tests.tests_auth_decorators.LoginTaskDecoratorTests.test_task_decorator_unauthed_user">[docs]</a>    <span class="k">def</span> <span class="nf">test_task_decorator_unauthed_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that an unauthed user cannot access a protected task URL</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">wsgi</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="s">&#39;/t_task&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">401</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_int</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LoginTaskDecoratorTests.test_task_decorator_authed_admin"><a class="viewcode-back" href="../../../nacelle.tests.html#nacelle.tests.tests_auth_decorators.LoginTaskDecoratorTests.test_task_decorator_authed_admin">[docs]</a>    <span class="k">def</span> <span class="nf">test_task_decorator_authed_admin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that an authed user (with admin rights) can access a protected task URL</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">setCurrentUser</span><span class="p">(</span><span class="s">&#39;test@test.com&#39;</span><span class="p">,</span> <span class="s">&#39;1234567890&#39;</span><span class="p">,</span> <span class="n">is_admin</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">wsgi</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="s">&#39;/t_task&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_int</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s">&#39;success&#39;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+        <span class="n">logoutCurrentUser</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="LoginTaskDecoratorTests.test_task_decorator_authed_user"><a class="viewcode-back" href="../../../nacelle.tests.html#nacelle.tests.tests_auth_decorators.LoginTaskDecoratorTests.test_task_decorator_authed_user">[docs]</a>    <span class="k">def</span> <span class="nf">test_task_decorator_authed_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that an authed user (without admin rights) cannot access a protected task URL</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">setCurrentUser</span><span class="p">(</span><span class="s">&#39;test@test.com&#39;</span><span class="p">,</span> <span class="s">&#39;1234567890&#39;</span><span class="p">,</span> <span class="n">is_admin</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">wsgi</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="s">&#39;/t_task&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">401</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_int</span><span class="p">)</span>
+        <span class="n">logoutCurrentUser</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="LoginTaskDecoratorTests.test_task_decorator_cronjob"><a class="viewcode-back" href="../../../nacelle.tests.html#nacelle.tests.tests_auth_decorators.LoginTaskDecoratorTests.test_task_decorator_cronjob">[docs]</a>    <span class="k">def</span> <span class="nf">test_task_decorator_cronjob</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that a taskqueue request can access a protected task URL</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">wsgi</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="s">&#39;/t_task&#39;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;X-AppEngine-TaskName&#39;</span><span class="p">,</span> <span class="s">&#39;true&#39;</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_int</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s">&#39;success&#39;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="LoginAdminDecoratorTests"><a class="viewcode-back" href="../../../nacelle.tests.html#nacelle.tests.tests_auth_decorators.LoginAdminDecoratorTests">[docs]</a><span class="k">class</span> <span class="nc">LoginAdminDecoratorTests</span><span class="p">(</span><span class="n">NacelleTestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="LoginAdminDecoratorTests.test_admin_decorator_unauthed_user"><a class="viewcode-back" href="../../../nacelle.tests.html#nacelle.tests.tests_auth_decorators.LoginAdminDecoratorTests.test_admin_decorator_unauthed_user">[docs]</a>    <span class="k">def</span> <span class="nf">test_admin_decorator_unauthed_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that an unauthed user gets redirected when attempting to access a protected URL</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">wsgi</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="s">&#39;/t_admin&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">302</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_int</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s">&#39;Location&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;https://www.google.com/accounts/Login&#39;</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="LoginAdminDecoratorTests.test_admin_decorator_authed_admin"><a class="viewcode-back" href="../../../nacelle.tests.html#nacelle.tests.tests_auth_decorators.LoginAdminDecoratorTests.test_admin_decorator_authed_admin">[docs]</a>    <span class="k">def</span> <span class="nf">test_admin_decorator_authed_admin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that an authed user (with admin rights) can access a protected URL</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">setCurrentUser</span><span class="p">(</span><span class="s">&#39;test@test.com&#39;</span><span class="p">,</span> <span class="s">&#39;1234567890&#39;</span><span class="p">,</span> <span class="n">is_admin</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">wsgi</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="s">&#39;/t_admin&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_int</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s">&#39;success&#39;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+        <span class="n">logoutCurrentUser</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="LoginAdminDecoratorTests.test_admin_decorator_authed_user"><a class="viewcode-back" href="../../../nacelle.tests.html#nacelle.tests.tests_auth_decorators.LoginAdminDecoratorTests.test_admin_decorator_authed_user">[docs]</a>    <span class="k">def</span> <span class="nf">test_admin_decorator_authed_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that an authed user (without admin rights) cannot access a protected URL</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">setCurrentUser</span><span class="p">(</span><span class="s">&#39;test@test.com&#39;</span><span class="p">,</span> <span class="s">&#39;1234567890&#39;</span><span class="p">,</span> <span class="n">is_admin</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">wsgi</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="s">&#39;/t_admin&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">401</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_int</span><span class="p">)</span>
+        <span class="n">logoutCurrentUser</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Nacelle Microframework 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Carey.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b3.
+    </div>
+  </body>
+</html>

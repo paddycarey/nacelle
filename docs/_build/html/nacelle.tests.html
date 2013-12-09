@@ -1,0 +1,366 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nacelle.tests package &mdash; Nacelle Microframework 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Nacelle Microframework 0.1.0 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Nacelle Microframework 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="nacelle-tests-package">
+<h1>nacelle.tests package<a class="headerlink" href="#nacelle-tests-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-nacelle.tests.tests_auth_decorators">
+<span id="nacelle-tests-tests-auth-decorators-module"></span><h2>nacelle.tests.tests_auth_decorators module<a class="headerlink" href="#module-nacelle.tests.tests_auth_decorators" title="Permalink to this headline">¶</a></h2>
+<p>Test nacelle&#8217;s authentication decorators</p>
+<dl class="class">
+<dt id="nacelle.tests.tests_auth_decorators.LoginAdminDecoratorTests">
+<em class="property">class </em><tt class="descclassname">nacelle.tests.tests_auth_decorators.</tt><tt class="descname">LoginAdminDecoratorTests</tt><big>(</big><em>methodName='runTest'</em><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_auth_decorators.html#LoginAdminDecoratorTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_auth_decorators.LoginAdminDecoratorTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="nacelle.test.html#nacelle.test.testcases.NacelleTestCase" title="nacelle.test.testcases.NacelleTestCase"><tt class="xref py py-class docutils literal"><span class="pre">nacelle.test.testcases.NacelleTestCase</span></tt></a></p>
+<dl class="method">
+<dt id="nacelle.tests.tests_auth_decorators.LoginAdminDecoratorTests.test_admin_decorator_authed_admin">
+<tt class="descname">test_admin_decorator_authed_admin</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_auth_decorators.html#LoginAdminDecoratorTests.test_admin_decorator_authed_admin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_auth_decorators.LoginAdminDecoratorTests.test_admin_decorator_authed_admin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that an authed user (with admin rights) can access a protected URL</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nacelle.tests.tests_auth_decorators.LoginAdminDecoratorTests.test_admin_decorator_authed_user">
+<tt class="descname">test_admin_decorator_authed_user</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_auth_decorators.html#LoginAdminDecoratorTests.test_admin_decorator_authed_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_auth_decorators.LoginAdminDecoratorTests.test_admin_decorator_authed_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that an authed user (without admin rights) cannot access a protected URL</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nacelle.tests.tests_auth_decorators.LoginAdminDecoratorTests.test_admin_decorator_unauthed_user">
+<tt class="descname">test_admin_decorator_unauthed_user</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_auth_decorators.html#LoginAdminDecoratorTests.test_admin_decorator_unauthed_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_auth_decorators.LoginAdminDecoratorTests.test_admin_decorator_unauthed_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that an unauthed user gets redirected when attempting to access a protected URL</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nacelle.tests.tests_auth_decorators.LoginCronDecoratorTests">
+<em class="property">class </em><tt class="descclassname">nacelle.tests.tests_auth_decorators.</tt><tt class="descname">LoginCronDecoratorTests</tt><big>(</big><em>methodName='runTest'</em><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_auth_decorators.html#LoginCronDecoratorTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_auth_decorators.LoginCronDecoratorTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="nacelle.test.html#nacelle.test.testcases.NacelleTestCase" title="nacelle.test.testcases.NacelleTestCase"><tt class="xref py py-class docutils literal"><span class="pre">nacelle.test.testcases.NacelleTestCase</span></tt></a></p>
+<dl class="method">
+<dt id="nacelle.tests.tests_auth_decorators.LoginCronDecoratorTests.test_cron_decorator_authed_admin">
+<tt class="descname">test_cron_decorator_authed_admin</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_auth_decorators.html#LoginCronDecoratorTests.test_cron_decorator_authed_admin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_auth_decorators.LoginCronDecoratorTests.test_cron_decorator_authed_admin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that an authed user (with admin rights) can access a protected cron URL</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nacelle.tests.tests_auth_decorators.LoginCronDecoratorTests.test_cron_decorator_authed_user">
+<tt class="descname">test_cron_decorator_authed_user</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_auth_decorators.html#LoginCronDecoratorTests.test_cron_decorator_authed_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_auth_decorators.LoginCronDecoratorTests.test_cron_decorator_authed_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that an authed user (without admin rights) cannot access a protected cron URL</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nacelle.tests.tests_auth_decorators.LoginCronDecoratorTests.test_cron_decorator_cronjob">
+<tt class="descname">test_cron_decorator_cronjob</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_auth_decorators.html#LoginCronDecoratorTests.test_cron_decorator_cronjob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_auth_decorators.LoginCronDecoratorTests.test_cron_decorator_cronjob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that a cronjob request can access a protected cron URL</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nacelle.tests.tests_auth_decorators.LoginCronDecoratorTests.test_cron_decorator_unauthed_user">
+<tt class="descname">test_cron_decorator_unauthed_user</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_auth_decorators.html#LoginCronDecoratorTests.test_cron_decorator_unauthed_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_auth_decorators.LoginCronDecoratorTests.test_cron_decorator_unauthed_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that an unauthed user cannot access a protected cron URL</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nacelle.tests.tests_auth_decorators.LoginTaskDecoratorTests">
+<em class="property">class </em><tt class="descclassname">nacelle.tests.tests_auth_decorators.</tt><tt class="descname">LoginTaskDecoratorTests</tt><big>(</big><em>methodName='runTest'</em><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_auth_decorators.html#LoginTaskDecoratorTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_auth_decorators.LoginTaskDecoratorTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="nacelle.test.html#nacelle.test.testcases.NacelleTestCase" title="nacelle.test.testcases.NacelleTestCase"><tt class="xref py py-class docutils literal"><span class="pre">nacelle.test.testcases.NacelleTestCase</span></tt></a></p>
+<dl class="method">
+<dt id="nacelle.tests.tests_auth_decorators.LoginTaskDecoratorTests.test_task_decorator_authed_admin">
+<tt class="descname">test_task_decorator_authed_admin</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_auth_decorators.html#LoginTaskDecoratorTests.test_task_decorator_authed_admin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_auth_decorators.LoginTaskDecoratorTests.test_task_decorator_authed_admin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that an authed user (with admin rights) can access a protected task URL</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nacelle.tests.tests_auth_decorators.LoginTaskDecoratorTests.test_task_decorator_authed_user">
+<tt class="descname">test_task_decorator_authed_user</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_auth_decorators.html#LoginTaskDecoratorTests.test_task_decorator_authed_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_auth_decorators.LoginTaskDecoratorTests.test_task_decorator_authed_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that an authed user (without admin rights) cannot access a protected task URL</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nacelle.tests.tests_auth_decorators.LoginTaskDecoratorTests.test_task_decorator_cronjob">
+<tt class="descname">test_task_decorator_cronjob</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_auth_decorators.html#LoginTaskDecoratorTests.test_task_decorator_cronjob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_auth_decorators.LoginTaskDecoratorTests.test_task_decorator_cronjob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that a taskqueue request can access a protected task URL</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nacelle.tests.tests_auth_decorators.LoginTaskDecoratorTests.test_task_decorator_unauthed_user">
+<tt class="descname">test_task_decorator_unauthed_user</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_auth_decorators.html#LoginTaskDecoratorTests.test_task_decorator_unauthed_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_auth_decorators.LoginTaskDecoratorTests.test_task_decorator_unauthed_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that an unauthed user cannot access a protected task URL</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="nacelle.tests.tests_auth_decorators.logoutCurrentUser">
+<tt class="descclassname">nacelle.tests.tests_auth_decorators.</tt><tt class="descname">logoutCurrentUser</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_auth_decorators.html#logoutCurrentUser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_auth_decorators.logoutCurrentUser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set currently mocked login to None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nacelle.tests.tests_auth_decorators.setCurrentUser">
+<tt class="descclassname">nacelle.tests.tests_auth_decorators.</tt><tt class="descname">setCurrentUser</tt><big>(</big><em>email</em>, <em>user_id</em>, <em>is_admin=False</em><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_auth_decorators.html#setCurrentUser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_auth_decorators.setCurrentUser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function to mock a logged in user</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-nacelle.tests.tests_conf_settings">
+<span id="nacelle-tests-tests-conf-settings-module"></span><h2>nacelle.tests.tests_conf_settings module<a class="headerlink" href="#module-nacelle.tests.tests_conf_settings" title="Permalink to this headline">¶</a></h2>
+<p>Test nacelle&#8217;s settings handling</p>
+<dl class="class">
+<dt id="nacelle.tests.tests_conf_settings.SettingsTests">
+<em class="property">class </em><tt class="descclassname">nacelle.tests.tests_conf_settings.</tt><tt class="descname">SettingsTests</tt><big>(</big><em>methodName='runTest'</em><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_conf_settings.html#SettingsTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_conf_settings.SettingsTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="nacelle.test.html#nacelle.test.testcases.NacelleTestCase" title="nacelle.test.testcases.NacelleTestCase"><tt class="xref py py-class docutils literal"><span class="pre">nacelle.test.testcases.NacelleTestCase</span></tt></a></p>
+<dl class="method">
+<dt id="nacelle.tests.tests_conf_settings.SettingsTests.test_get_invalid_setting">
+<tt class="descname">test_get_invalid_setting</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_conf_settings.html#SettingsTests.test_get_invalid_setting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_conf_settings.SettingsTests.test_get_invalid_setting" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that getting a setting that doesn&#8217;t exist throws an AttributeError</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nacelle.tests.tests_conf_settings.SettingsTests.test_get_valid_setting">
+<tt class="descname">test_get_valid_setting</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_conf_settings.html#SettingsTests.test_get_valid_setting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_conf_settings.SettingsTests.test_get_valid_setting" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test getting a setting that exists</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-nacelle.tests.tests_render_decorators">
+<span id="nacelle-tests-tests-render-decorators-module"></span><h2>nacelle.tests.tests_render_decorators module<a class="headerlink" href="#module-nacelle.tests.tests_render_decorators" title="Permalink to this headline">¶</a></h2>
+<p>Test nacelle&#8217;s authentication decorators</p>
+<dl class="class">
+<dt id="nacelle.tests.tests_render_decorators.RenderHandlebarsDecoratorTests">
+<em class="property">class </em><tt class="descclassname">nacelle.tests.tests_render_decorators.</tt><tt class="descname">RenderHandlebarsDecoratorTests</tt><big>(</big><em>methodName='runTest'</em><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_render_decorators.html#RenderHandlebarsDecoratorTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_render_decorators.RenderHandlebarsDecoratorTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="nacelle.test.html#nacelle.test.testcases.NacelleTestCase" title="nacelle.test.testcases.NacelleTestCase"><tt class="xref py py-class docutils literal"><span class="pre">nacelle.test.testcases.NacelleTestCase</span></tt></a></p>
+<dl class="method">
+<dt id="nacelle.tests.tests_render_decorators.RenderHandlebarsDecoratorTests.test_render_handlebars_existing_template">
+<tt class="descname">test_render_handlebars_existing_template</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_render_decorators.html#RenderHandlebarsDecoratorTests.test_render_handlebars_existing_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_render_decorators.RenderHandlebarsDecoratorTests.test_render_handlebars_existing_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test rendering a template with Handlebars (pybars)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nacelle.tests.tests_render_decorators.RenderHandlebarsDecoratorTests.test_render_handlebars_override_response">
+<tt class="descname">test_render_handlebars_override_response</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_render_decorators.html#RenderHandlebarsDecoratorTests.test_render_handlebars_override_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_render_decorators.RenderHandlebarsDecoratorTests.test_render_handlebars_override_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that a webapp2.Response is rendered when explicitly returned from a handlebars handler</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nacelle.tests.tests_render_decorators.RenderJinja2DecoratorTests">
+<em class="property">class </em><tt class="descclassname">nacelle.tests.tests_render_decorators.</tt><tt class="descname">RenderJinja2DecoratorTests</tt><big>(</big><em>methodName='runTest'</em><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_render_decorators.html#RenderJinja2DecoratorTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_render_decorators.RenderJinja2DecoratorTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="nacelle.test.html#nacelle.test.testcases.NacelleTestCase" title="nacelle.test.testcases.NacelleTestCase"><tt class="xref py py-class docutils literal"><span class="pre">nacelle.test.testcases.NacelleTestCase</span></tt></a></p>
+<dl class="method">
+<dt id="nacelle.tests.tests_render_decorators.RenderJinja2DecoratorTests.test_render_jinja2_existing_template">
+<tt class="descname">test_render_jinja2_existing_template</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_render_decorators.html#RenderJinja2DecoratorTests.test_render_jinja2_existing_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_render_decorators.RenderJinja2DecoratorTests.test_render_jinja2_existing_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test rendering a template with Jinja2</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nacelle.tests.tests_render_decorators.RenderJinja2DecoratorTests.test_render_jinja2_override_response">
+<tt class="descname">test_render_jinja2_override_response</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_render_decorators.html#RenderJinja2DecoratorTests.test_render_jinja2_override_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_render_decorators.RenderJinja2DecoratorTests.test_render_jinja2_override_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that a webapp2.Response is rendered when explicitly returned from a jinja2 handler</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nacelle.tests.tests_render_decorators.RenderJsonDecoratorTests">
+<em class="property">class </em><tt class="descclassname">nacelle.tests.tests_render_decorators.</tt><tt class="descname">RenderJsonDecoratorTests</tt><big>(</big><em>methodName='runTest'</em><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_render_decorators.html#RenderJsonDecoratorTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_render_decorators.RenderJsonDecoratorTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="nacelle.test.html#nacelle.test.testcases.NacelleTestCase" title="nacelle.test.testcases.NacelleTestCase"><tt class="xref py py-class docutils literal"><span class="pre">nacelle.test.testcases.NacelleTestCase</span></tt></a></p>
+<dl class="method">
+<dt id="nacelle.tests.tests_render_decorators.RenderJsonDecoratorTests.test_render_json">
+<tt class="descname">test_render_json</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_render_decorators.html#RenderJsonDecoratorTests.test_render_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_render_decorators.RenderJsonDecoratorTests.test_render_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test rendering a JSON response</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nacelle.tests.tests_render_decorators.RenderJsonDecoratorTests.test_render_json_dt">
+<tt class="descname">test_render_json_dt</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_render_decorators.html#RenderJsonDecoratorTests.test_render_json_dt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_render_decorators.RenderJsonDecoratorTests.test_render_json_dt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test rendering a JSON response containing a datetime object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nacelle.tests.tests_render_decorators.RenderJsonDecoratorTests.test_render_json_error">
+<tt class="descname">test_render_json_error</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_render_decorators.html#RenderJsonDecoratorTests.test_render_json_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_render_decorators.RenderJsonDecoratorTests.test_render_json_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that an error response is correctly rendered when a JSON handler is aborted</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nacelle.tests.tests_render_decorators.RenderJsonDecoratorTests.test_render_json_model">
+<tt class="descname">test_render_json_model</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_render_decorators.html#RenderJsonDecoratorTests.test_render_json_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_render_decorators.RenderJsonDecoratorTests.test_render_json_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test rendering a JSON response containing an ndb model</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nacelle.tests.tests_render_decorators.RenderJsonDecoratorTests.test_render_json_override_response">
+<tt class="descname">test_render_json_override_response</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_render_decorators.html#RenderJsonDecoratorTests.test_render_json_override_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_render_decorators.RenderJsonDecoratorTests.test_render_json_override_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that a webapp2.Response is rendered when explicitly returned from a json handler</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nacelle.tests.tests_render_decorators.RenderJsonDecoratorTests.test_render_json_unencodable">
+<tt class="descname">test_render_json_unencodable</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_render_decorators.html#RenderJsonDecoratorTests.test_render_json_unencodable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_render_decorators.RenderJsonDecoratorTests.test_render_json_unencodable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that an error response is correctly rendered when a JSON handler encounters an unserialisable object.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nacelle.tests.tests_render_decorators.TestModel">
+<em class="property">class </em><tt class="descclassname">nacelle.tests.tests_render_decorators.</tt><tt class="descname">TestModel</tt><big>(</big><em>*args</em>, <em>**kwds</em><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_render_decorators.html#TestModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_render_decorators.TestModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">google.appengine.ext.ndb.model.Model</span></tt></p>
+<p>Simple model used for testing JSON rendering.</p>
+<dl class="attribute">
+<dt id="nacelle.tests.tests_render_decorators.TestModel.ts">
+<tt class="descname">ts</tt><em class="property"> None</em><a class="headerlink" href="#nacelle.tests.tests_render_decorators.TestModel.ts" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Property whose value is a datetime object.</p>
+<p>Note: Unlike Django, auto_now_add can be overridden by setting the
+value before writing the entity.  And unlike classic db, auto_now
+does not supply a default value.  Also unlike classic db, when the
+entity is written, the property values are updated to match what
+was written.  Finally, beware that this also updates the value in
+the in-process cache, <em>and</em> that auto_now_add may interact weirdly
+with transaction retries (a retry of a property with auto_now_add
+set will reuse the value that was set on the first try).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-nacelle.tests.tests_session_handling">
+<span id="nacelle-tests-tests-session-handling-module"></span><h2>nacelle.tests.tests_session_handling module<a class="headerlink" href="#module-nacelle.tests.tests_session_handling" title="Permalink to this headline">¶</a></h2>
+<p>Test nacelle&#8217;s session handling</p>
+<dl class="class">
+<dt id="nacelle.tests.tests_session_handling.SessionHandlingTests">
+<em class="property">class </em><tt class="descclassname">nacelle.tests.tests_session_handling.</tt><tt class="descname">SessionHandlingTests</tt><big>(</big><em>methodName='runTest'</em><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_session_handling.html#SessionHandlingTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_session_handling.SessionHandlingTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="nacelle.test.html#nacelle.test.testcases.NacelleTestCase" title="nacelle.test.testcases.NacelleTestCase"><tt class="xref py py-class docutils literal"><span class="pre">nacelle.test.testcases.NacelleTestCase</span></tt></a></p>
+<dl class="method">
+<dt id="nacelle.tests.tests_session_handling.SessionHandlingTests.test_setting_session_var_and_retrieve_on_next_request">
+<tt class="descname">test_setting_session_var_and_retrieve_on_next_request</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_session_handling.html#SessionHandlingTests.test_setting_session_var_and_retrieve_on_next_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_session_handling.SessionHandlingTests.test_setting_session_var_and_retrieve_on_next_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test persisting a session variable in a cookie</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="nacelle.tests.tests_session_handling.get_session_var">
+<tt class="descclassname">nacelle.tests.tests_session_handling.</tt><tt class="descname">get_session_var</tt><big>(</big><em>request</em><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_session_handling.html#get_session_var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_session_handling.get_session_var" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="nacelle.tests.tests_session_handling.set_session_var">
+<tt class="descclassname">nacelle.tests.tests_session_handling.</tt><tt class="descname">set_session_var</tt><big>(</big><em>request</em><big>)</big><a class="reference internal" href="_modules/nacelle/tests/tests_session_handling.html#set_session_var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nacelle.tests.tests_session_handling.set_session_var" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-nacelle.tests">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-nacelle.tests" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">nacelle.tests package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-nacelle.tests.tests_auth_decorators">nacelle.tests.tests_auth_decorators module</a></li>
+<li><a class="reference internal" href="#module-nacelle.tests.tests_conf_settings">nacelle.tests.tests_conf_settings module</a></li>
+<li><a class="reference internal" href="#module-nacelle.tests.tests_render_decorators">nacelle.tests.tests_render_decorators module</a></li>
+<li><a class="reference internal" href="#module-nacelle.tests.tests_session_handling">nacelle.tests.tests_session_handling module</a></li>
+<li><a class="reference internal" href="#module-nacelle.tests">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/nacelle.tests.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Nacelle Microframework 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Carey.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b3.
+    </div>
+  </body>
+</html>
