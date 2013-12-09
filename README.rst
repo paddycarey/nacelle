@@ -16,7 +16,7 @@ A lightweight microframework built on top of webapp2 for use on Google Appengine
 
 Nacelle aims to provide a small but solid set of tools that enable developers to quickly get a new app up and running, whilst not sacrificing any of the flexibility and power of webapp2 in the process. Nacelle is suitable for building everything from tiny prototypes to large complex applications, it should never get in your way.
 
-* Free software: MIT license
+* Free software: `MIT license <http://opensource.org/licenses/MIT>`_
 * Documentation: http://nacelle.rtfd.org.
 
 
@@ -29,12 +29,6 @@ Features
 * Session management and automatic secret key generation
 * Template rendering (with Jinja2 or Handlebars)
 * Easily run tasks in the background outside of the request loop
-
-
-License
--------
-
-nacelle is licensed under the `MIT license <http://opensource.org/licenses/MIT>`_.
 
 
 Sorry
