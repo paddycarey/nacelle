@@ -48,13 +48,15 @@ class Mock(object):
         else:
             return Mock()
 
-MOCK_MODULES = ['setup_environ']
+MOCK_MODULES = ['nacelle.test.environ.setup_environ']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock()
 
 if 'google' in sys.modules:
     del sys.modules['google']
 from nacelle.test.environ import setup_environ
+# import pprint
+# print pprint.pprint(sys.modules)
 setup_environ()
 
 import nacelle
