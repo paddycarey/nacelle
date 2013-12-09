@@ -30,34 +30,8 @@ sys.path.insert(0, project_root)
 
 # setup our appengine environment so we can import the libs we need for our tests,
 # we need to do this first so we can import the stubs from testbed
-class Mock(object):
-    def __init__(self, *args, **kwargs):
-        pass
-
-    def __call__(self, *args, **kwargs):
-        return Mock()
-
-    @classmethod
-    def __getattr__(cls, name):
-        if name in ('__file__', '__path__'):
-            return '/dev/null'
-        elif name[0] == name[0].upper():
-            mockType = type(name, (), {})
-            mockType.__module__ = __name__
-            return mockType
-        else:
-            return Mock()
-
-MOCK_MODULES = ['nacelle.test.environ.setup_environ']
-for mod_name in MOCK_MODULES:
-    sys.modules[mod_name] = Mock()
-
 if 'google' in sys.modules:
     del sys.modules['google']
-from nacelle.test.environ import setup_environ
-# import pprint
-# print pprint.pprint(sys.modules)
-setup_environ()
 
 import nacelle
 
@@ -68,7 +42,8 @@ import nacelle
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
+# extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
+extensions = []
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

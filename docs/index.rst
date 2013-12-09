@@ -6,8 +6,8 @@
 .. include:: ../README.rst
 
 
-Contents:
----------
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2
@@ -17,11 +17,3 @@ Contents:
    contributing
    credits
    history
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
