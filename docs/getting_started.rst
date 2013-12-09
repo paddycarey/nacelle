@@ -1,6 +1,9 @@
 Getting Started With Nacelle
 ============================
 
+Nacelle tries to be ready-to-run straight out of the box. The following guide attempts to quickly get you up and running with a basic nacelle app, for more advanced usage you should check out the full documentation (when it's completed).
+
+
 Prerequisites
 -------------
 
@@ -26,8 +29,8 @@ Getting a copy of Nacelle
 The latest version of Nacelle can be always be obtained from `Github <https://github.com/rehabstudio/nacelle>`_. You can either use git to clone Nacelle or download a copy of the master branch. Either way you do it, place the contents of the Nacelle's source into the directory where you will be creating your application.
 
 
-Configuration
--------------
+App.yaml Configuration
+----------------------
 
 A little bit of configuration has to be done. Open up ``./app.yaml`` and set the application and version properties appropriately, like below::
 

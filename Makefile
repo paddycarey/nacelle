@@ -20,6 +20,5 @@ test:
 	./testrunner.sh
 
 docs: clean-docs
-	sphinx-apidoc -o docs/ nacelle
 	$(MAKE) -C docs html
 	xdg-open docs/_build/html/index.html

@@ -11,6 +11,14 @@ Authors
 Why not submit a pull request and add your name to this list?
 
 
+Documentation
+-------------
+
+As a large part of nacelle is derived from webapp2, so it follows that a large part of its documentation has been derived from there too.
+
+`webapp2 <http://webapp-improved.appspot.com/>`_ documentation by Rodrigo Moraes.
+
+
 Libraries
 ---------
 

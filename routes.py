@@ -3,4 +3,5 @@ from webapp2 import Route
 
 ROUTES = [
     Route(r'/', 'app.index', name='index'),
+    (r'/products/(\d+)', 'app.ProductHandler'),
 ]
