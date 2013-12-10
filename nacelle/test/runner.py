@@ -27,9 +27,10 @@ setup_environ()
 
 if __name__ == '__main__':
 
-    nose.run(argv=[
+    res = nose.run(argv=[
         'testrunner.py',
         '-v',
         '--with-yanc',
         '--logging-level=INFO'
     ])
+    sys.exit(int(not res))
