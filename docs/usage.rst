@@ -101,3 +101,110 @@ Advanced Routing
 ^^^^^^^^^^^^^^^^
 
 Please see the `webapp2 <http://webapp-improved.appspot.com/>`_ documentation for more advanced routing techniques.
+
+
+
+Request handlers
+----------------
+
+In nacelle/webapp2 vocabulary, `request handler` or simply `handler` is a common term that refers to the callable that contains the application logic to handle a request. This sounds very abstract, but we will explain everything in detail below.
+
+
+Handlers 101
+^^^^^^^^^^^^
+
+A handler is equivalent to the `Controller` in the `MVC <http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller>`_ terminology: in a simplified manner, it is where you process the request, manipulate data and define a response to be returned to the client: HTML, JSON, XML, files or whatever the app requires.
+
+Normally a handler is a class that extends :class:`webapp2.RequestHandler` or, for compatibility purposes, ``webapp.RequestHandler``. Here is a simple one::
+
+    class ProductHandler(webapp2.RequestHandler):
+        def get(self, product_id):
+            self.response.write('You requested product %r.' % product_id)
+
+
+This code defines one request handler, ``ProductHandler``. When the application receives an HTTP request to a path the route for this handler, it instantiates the handler and calls the corresponding HTTP method from it. The handler above can only handle ``GET`` HTTP requests, as it only defines a ``get()`` method. To handle ``POST`` requests, it would need to implement a ``post()`` method, and so on.
+
+The handler method receives a ``product_id`` extracted from the URI, and outputs a simple message containing the id as response. Not very useful, but this is just to show how it works. In a more complete example, the handler would fetch a corresponding record from a database and output an appropriate response -- HTML, JSON or XML with details about the requested product, for example.
+
+
+HTTP methods translated to class methods
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The default behavior of the :class:`webapp2.RequestHandler` is to call a method that corresponds with the HTTP action of the request, such as the ``get()`` method for a HTTP GET request. The method processes the request and prepares a response, then returns. Finally, the application sends the response to the client.
+
+The following example defines a request handler that responds to HTTP GET requests::
+
+    class AddTwoNumbers(webapp2.RequestHandler):
+        def get(self):
+            try:
+                first = int(self.request.get('first'))
+                second = int(self.request.get('second'))
+
+                self.response.write("<html><body><p>%d + %d = %d</p></body></html>" %
+                                        (first, second, first + second))
+            except (TypeError, ValueError):
+                self.response.write("<html><body><p>Invalid inputs</p></body></html>")
+
+A request handler can define any of the following methods to handle the
+corresponding HTTP actions:
+
+- ``get()``
+- ``post()``
+- ``head()``
+- ``options()``
+- ``put()``
+- ``delete()``
+- ``trace()``
+
+
+View functions
+^^^^^^^^^^^^^^
+
+In some Python frameworks, handlers are called `view functions` or simply `views`. In Django, for example, `views` are normally simple functions that handle a request. Our examples use mostly classes, but nacelle handlers can also be normal functions equivalent to Django's `views`. nacelle currently encourages a functional style as most of its tools have been built to work with this style of handler, however, in future nacelle's tools should work with any type of handler.
+
+A nacelle handler can, really, be **any** callable. The routing system has hooks to adapt how handlers are called, and two default adapters are used whether it is a function or a class. The following example demonstrates this::
+
+    def display_product(request, *args, **kwargs):
+        return webapp2.Response('You requested product %r.' % args[0])
+
+
+Here, our handler is a simple function that receives the request instance, positional route variables as ``*args`` and named variables as ``**kwargs``, if they are defined.
+
+Functions are an alternative for those that prefer their simplicity or think that handlers don't benefit that much from the power and flexibility provided by classes: inheritance, attributes, grouped methods, descriptors, metaclasses, etc. An app can have mixed handler classes and functions.
+
+.. note::
+   We avoid using the term `view` because it is often confused with the `View` definition from the classic `MVC` pattern. Django prefers to call its `MVC` implementation `MTV` (model-template-view), so `view` may make sense in their terminology. Still, we think that the term can cause unnecessary confusion and prefer to use `handler` instead, like in other Python frameworks (webapp, web.py or Tornado, for instance). In essence, though, they are synonyms.
+
+
+Returned values
+^^^^^^^^^^^^^^^
+
+A handler method doesn't need to return anything: it can simply write to the response object using ``self.response.write()``.
+
+But a handler **can** return values to be used in the response. Using the default dispatcher implementation, if a handler returns anything that is not ``None`` it **must** be a :class:`webapp2.Response` instance. If it does so, that response object is used instead of the default one.
+
+For example, let's return a response object with a `Hello, world` message::
+
+    class HelloHandler(webapp2.RequestHandler):
+        def get(self):
+            return webapp2.Response('Hello, world!')
+
+This is the same as::
+
+    class HelloHandler(webapp2.RequestHandler):
+        def get(self):
+            self.response.write('Hello, world!')
+
+
+Overriding __init__()
+^^^^^^^^^^^^^^^^^^^^^
+
+If you want to override the :meth:`webapp2.RequestHandler.__init__` method, you must call :meth:`webapp2.RequestHandler.initialize` at the beginning of the method. It'll set the current request, response and app objects as attributes of the handler. For example::
+
+    class MyHandler(webapp2.RequestHandler):
+        def __init__(self, request, response):
+            # Set self.request, self.response and self.app.
+            self.initialize(request, response)
+
+            # ... add your custom initializations here ...
+            # ...
