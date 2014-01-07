@@ -509,10 +509,10 @@ The ``render_json`` decorator allows a handler function to return any python dic
     def my_handler(request):
         return {'somekey': 1, 'someotherkey': 2, 'somelist': [0, 1, 2, 3, 4]}
 
-The ``render_handlebars`` and ``render_jinja2`` decorators allow easy rendering to template, either using Handlebars or Jinja2 (see `Rendering Templates` section for full details). Both decorators take a single argument, the name of the template used to render the response. Nacelle includes a ``templates/`` directory in the root of the application by default, templates should be stored in this folder for easy access.
+The ``render_handlebars`` and ``render_jinja2`` decorators allow easy rendering to template, either using Handlebars or Jinja2 (see `Rendering Templates` section for full details). Both decorators take a single argument, the name of the template used to render the response. Nacelle includes a ``templates/`` directory in the root of the application by default, templates should be stored in this folder for easy access::
 
-    from nacell.core.decorators import render_handlebars
-    from nacell.core.decorators import render_jinja2
+    from nacelle.core.decorators import render_handlebars
+    from nacelle.core.decorators import render_jinja2
 
     @render_handlebars('sometemplate.html')
     def my_handler(request):
