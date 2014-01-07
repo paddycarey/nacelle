@@ -395,7 +395,7 @@ WebOb is an open source third-party library. See the `WebOb`_ documentation for 
 
 
 Building a Response
-^^^^^^^^^^^^^^^^^^^
+-------------------
 
 The class based request handler instance builds the response using its response property. This is initialized to an empty `WebOb`_ ``Response`` object by the application.
 
@@ -521,3 +521,91 @@ The ``render_handlebars`` and ``render_jinja2`` decorators allow easy rendering 
     @render_jinja2('somedir/sometemplate.html')
     def my_other_handler(request):
         context = {'somekey': 'somedata'}
+
+
+Exception handling
+------------------
+
+A good app is prepared even when something goes wrong: a service is down, the application didn't expect a given input type or many other errors that can happen in a web application. To deal with these cases, we need a good exception handling mechanism to prepare the app to handle the unexpected scenarios.
+
+
+HTTP exceptions
+^^^^^^^^^^^^^^^
+
+WebOb provides a collection of exceptions that correspond to HTTP status codes. They all extend a base class, ``webob.exc.HTTPException``, also available in webapp2 as ``webapp2.HTTPException``.
+
+An ``HTTPException`` is also a WSGI application, meaning that an instance of it can be returned to be used as response. If an ``HTTPException`` is not handled, it will be used as a standard response, setting the header status code and a default error message in the body.
+
+
+Exceptions in handlers
+^^^^^^^^^^^^^^^^^^^^^^
+
+Class-based handlers can catch exceptions implementing the method :meth:`webapp2.RequestHandler.handle_exception`. It is a good idea to define a base class that catches generic exceptions, and if needed override ``handle_exception()`` in extended classes to set more specific responses.
+
+Here we will define a exception handling function in a base class, and the real app classes extend it::
+
+    import logging
+    import webapp2
+
+    class BaseHandler(webapp2.RequestHandler):
+        def handle_exception(self, exception, debug):
+            # Log the error.
+            logging.exception(exception)
+
+            # Set a custom message.
+            response.write('An error occurred.')
+
+            # If the exception is a HTTPException, use its error code.
+            # Otherwise use a generic 500 error code.
+            if isinstance(exception, webapp2.HTTPException):
+                response.set_status(exception.code)
+            else:
+                response.set_status(500)
+
+    class HomeHandler(BaseHandler):
+        def get(self):
+            self.response.write('This is the HomeHandler.')
+
+    class ProductListHandler(BaseHandler):
+        def get(self):
+            self.response.write('This is the ProductListHandler.')
+
+If something unexpected happens during the ``HomeHandler`` or ``ProductListHandler`` lifetime, ``handle_exception()`` will catch it because they extend a class that implements exception handling.
+
+You can use exception handling to log errors and display custom messages instead of a generic error. You could also render a template with a friendly message, or return a JSON with an error code, depending on your app.
+
+
+Exceptions in the WSGI app
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Uncaught exceptions can also be handled by the WSGI application. The WSGI app is a good place to handle '404 Not Found' or '500 Internal Server Error' errors, since it serves as a last attempt to handle all uncaught exceptions, including non-registered URI paths or unexpected application behavior.
+
+By default in Nacelle, we catch exceptions in the WSGI app using error handlers registered in :attr:`nacelle.core.exception_handlers`. By default Nacelle will log the exception and print a simple message to the browser. Developers can submit exceptions to a Sentry server by adding their credentials to a ``settings.py`` file in the app's root folder using the key ``SENTRY_DSN``.
+
+For custom behaviour, simply modily the :attr:`nacelle.core.exception_handlers.handle_500` function. In future this will be configurable via a setting.
+
+
+abort()
+^^^^^^^
+
+The function :func:`webapp2.abort` is a shortcut to raise one of the HTTP exceptions provided by WebOb: it takes an HTTP status code (403, 404, 500 etc) and raises the corresponding exception.
+
+Use ``abort`` (or :func:`webapp2.RequestHandler.abort` inside a class-based handler) to raise an ``HTTPException`` to be handled by an exception handler. For example, we could call ``abort(404)`` when a requested item is not found in the database, and have an exception handler ready to handle 404s.
+
+Besides the status code, some extra keyword arguments can be passed to ``abort()``:
+
+detail
+  An explanation about the error.
+comment
+  An more detailed comment to be included in the response body.
+headers
+  Extra response headers to be set.
+body_template
+  A string to be used as template for the response body. The default template
+  has the following format, with variables replaced by arguments, if defined:
+
+.. code-block:: html
+
+   ${explanation}<br /><br />
+   ${detail}
+   ${html_comment}
