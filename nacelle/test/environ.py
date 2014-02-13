@@ -30,5 +30,10 @@ def setup_environ():
     sys.path.insert(0, sdk_path)
 
     # Use dev_appserver to set up the python path
-    from dev_appserver import fix_sys_path
+    if 'google-cloud-sdk' in sdk_path:
+        sdk_path = os.path.join(os.path.split(sdk_path)[0], 'platform', 'google_appengine')
+        sys.path.insert(0, os.path.abspath(sdk_path))
+        from dev_appserver import fix_sys_path
+    else:
+        from dev_appserver import fix_sys_path
     fix_sys_path()
