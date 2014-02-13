@@ -23,7 +23,7 @@ def deferrable(queue_name):
     admin users or taskqueues.
     """
     def _method_wrapper(view_method):
-        def _arguments_wrapper(request, *args, **kwargs) :
+        def _arguments_wrapper(request, *args, **kwargs):
             # check caller is authorised
             if not users.is_current_user_admin() and not 'X-AppEngine-TaskName' in request.headers:
                 return webapp2.abort(401, detail="Only taskqueues or admin users can access URL")
@@ -43,7 +43,7 @@ def render_handlebars(template_name):
     Decorator that renders the decorated function with the given handlebars template.
     """
     def _method_wrapper(view_method):
-        def _arguments_wrapper(request, *args, **kwargs) :
+        def _arguments_wrapper(request, *args, **kwargs):
             # call the view function
             context = view_method(request, *args, **kwargs)
             # if the view has returned a HttpResponse or subclass then return that directly
@@ -62,7 +62,7 @@ def render_jinja2(template_name):
     Decorator that renders the decorated function with the given handlebars template.
     """
     def _method_wrapper(view_method):
-        def _arguments_wrapper(request, *args, **kwargs) :
+        def _arguments_wrapper(request, *args, **kwargs):
             # call the view function
             context = view_method(request, *args, **kwargs)
             # if the view has returned a HttpResponse or subclass then return that directly
@@ -82,10 +82,14 @@ def render_json(view_method):
     """
     Decorator that renders the decorated function as JSON
     """
-    def _arguments_wrapper(request, *args, **kwargs) :
+    def _arguments_wrapper(request, *args, **kwargs):
         try:
             context = view_method(request, *args, **kwargs)
-            status = 200
+            if isinstance(context, tuple):
+                status = context[1]
+                context = context[0]
+            else:
+                status = 200
         except webapp2.HTTPException as e:
             context = {'error': "%d %s" % (e.code, e.title)}
             status = e.code
@@ -102,7 +106,7 @@ def login_admin(view_method):
     """
     Decorator that enforces admin login
     """
-    def _arguments_wrapper(request, *args, **kwargs) :
+    def _arguments_wrapper(request, *args, **kwargs):
         # check caller is authorised
         request.user = users.get_current_user()
         if not request.user:
@@ -119,7 +123,7 @@ def login_cron(view_method):
     """
     Decorator that ensures handler is only available to cronjobs
     """
-    def _arguments_wrapper(request, *args, **kwargs) :
+    def _arguments_wrapper(request, *args, **kwargs):
         # check caller is authorised
         if not users.is_current_user_admin() and not 'X-Appengine-Cron' in request.headers:
             return webapp2.abort(401, detail="Only cronjobs or admin users can access this URL")
@@ -132,7 +136,7 @@ def login_task(view_method):
     """
     Decorator that ensures handler is only available to task queues
     """
-    def _arguments_wrapper(request, *args, **kwargs) :
+    def _arguments_wrapper(request, *args, **kwargs):
         # check caller is authorised
         if not users.is_current_user_admin() and not 'X-AppEngine-TaskName' in request.headers:
             return webapp2.abort(401, detail="Only taskqueues or admin users can access this URL")
