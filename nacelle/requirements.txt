@@ -1,0 +1,14 @@
+##############################################################################
+# nacelle development dependencies
+#
+# Note: You only need install these if you're planning on running the tests,
+#       extracting/compiling translations or something similarly exotic. If
+#       you're only running or deploying the app you don't need these.
+##############################################################################
+
+Pillow==2.3.0  # required to perform various image manipulations
+coverage==3.6  # required for code coverage metrics
+coveralls==0.3  # nice online reporting of code coverage
+nose==1.3.0  # test runner
+nose-exclude==0.2.0 # plugin for nose
+yanc==0.2.4  # fancy colored test output
