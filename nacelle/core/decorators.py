@@ -78,6 +78,20 @@ def render_jinja2(template_name):
     return _method_wrapper
 
 
+def require_method(http_methods):
+    """
+    Decorator that enforces a HTTP method for the wrapped function
+    """
+    def _method_wrapper(view_method):
+        def _arguments_wrapper(request, *args, **kwargs):
+            if not request.method in http_methods:
+                return webapp2.abort(405)
+            # call the view function
+            return view_method(request, *args, **kwargs)
+        return _arguments_wrapper
+    return _method_wrapper
+
+
 def render_json(view_method):
     """
     Decorator that renders the decorated function as JSON
