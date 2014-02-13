@@ -26,7 +26,7 @@ error_handler = webapp2.import_string(settings.ERROR_HANDLER_MODULE)
 secret_key_store = webapp2.import_string('nacelle.core.sessions.models.SecretKey')
 
 # Define our WSGI app so GAE can run it
-wsgi = webapp2.WSGIApplication(routes, debug=True, config={
+wsgi = webapp2.WSGIApplication(routes, debug=settings.DEBUG, config={
     'webapp2_extras.sessions': {
         'secret_key': secret_key_store.get_key(),
     },
