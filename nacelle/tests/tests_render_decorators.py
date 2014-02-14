@@ -127,7 +127,7 @@ class RenderHandlebarsDecoratorTests(NacelleTestCase):
         """
         response = wsgi.get_response('/r_handlebars')
         self.assertEqual(200, response.status_int)
-        self.assertIn('This template was rendered with Handlebars.', response.body)
+        self.assertIn('<!DOCTYPE html>', response.body)
 
     def test_render_handlebars_override_response(self):
         """Test that a webapp2.Response is rendered when explicitly returned from a handlebars handler
@@ -144,7 +144,7 @@ class RenderJinja2DecoratorTests(NacelleTestCase):
         """
         response = wsgi.get_response('/r_jinja2')
         self.assertEqual(200, response.status_int)
-        self.assertIn('This template was rendered with Jinja2.', response.body)
+        self.assertIn('<!DOCTYPE html>', response.body)
 
     def test_render_jinja2_override_response(self):
         """Test that a webapp2.Response is rendered when explicitly returned from a jinja2 handler
