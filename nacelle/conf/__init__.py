@@ -24,7 +24,7 @@ class Settings(object):
             return getattr(self._default_settings, name)
         except AttributeError:
             pass
-        raise AttributeError, 'setting not found: %s' % name
+        raise AttributeError('setting not found: %s' % name)
 
 # init our settings object
 settings = Settings()

@@ -36,6 +36,8 @@ def get_random_string(length=12,
                 "%s%s%s" % (
                     random.getstate(),
                     time.time(),
-                    str(uuid.uuid4()))
-                ).digest())
+                    str(uuid.uuid4())
+                )
+            ).digest()
+        )
     return ''.join([random.choice(allowed_chars) for i in range(length)])

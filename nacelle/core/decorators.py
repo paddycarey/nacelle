@@ -37,7 +37,6 @@ def deferrable(queue_name):
     return _method_wrapper
 
 
-
 def render_handlebars(template_name):
     """
     Decorator that renders the decorated function with the given handlebars template.

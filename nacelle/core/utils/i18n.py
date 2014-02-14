@@ -37,7 +37,7 @@ def parse_accept_language_header(string, pattern='([a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,
         else:
             l = None
         if l:
-            res[l] = int(100*float(q))
+            res[l] = int(100 * float(q))
     return res
 
 

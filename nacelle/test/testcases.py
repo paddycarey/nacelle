@@ -22,7 +22,7 @@ class NacelleTestCase(TestCase):
         """
         testMethod = getattr(self, self._testMethodName)
         skipped = (getattr(self.__class__, "__unittest_skip__", False) or
-            getattr(testMethod, "__unittest_skip__", False))
+                   getattr(testMethod, "__unittest_skip__", False))
 
         # pre-setup for any test methods
         if not skipped:
