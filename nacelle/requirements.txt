@@ -6,6 +6,8 @@
 #       you're only running or deploying the app you don't need these.
 ##############################################################################
 
+Babel==1.3  # l10n/i18n framework
+Jinja2==2.7.2  # already included with appengine, but we need it in our venv so that Babel can extract translatable strings from templates
 Pillow==2.3.0  # required to perform various image manipulations
 coverage==3.6  # required for code coverage metrics
 coveralls==0.3  # nice online reporting of code coverage

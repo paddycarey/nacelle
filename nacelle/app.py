@@ -32,7 +32,11 @@ wsgi = webapp2.WSGIApplication(routes, debug=settings.DEBUG, config={
     },
     'webapp2_extras.jinja2': {
         'globals': settings.JINJA_GLOBALS,
-    }
+    },
+    'webapp2_extras.i18n': {
+        'translations_path': settings.TRANSLATIONS_PATH,
+        'locale_selector': settings.TRANSLATIONS_SELECTOR,
+    },
 })
 
 # attach dispatcher and error_handler to the WSGI app

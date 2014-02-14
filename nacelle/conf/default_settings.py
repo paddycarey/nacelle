@@ -41,5 +41,9 @@ ADDITIONAL_VENDOR_PATHS = ()
 # variables/functions to inject into any jinja template
 JINJA_GLOBALS = {'uri_for': webapp2.uri_for, 'logout_url': users.create_logout_url}
 
+# i18n related settings
+TRANSLATIONS_PATH = os.path.join(ROOT_DIR, 'translations')
+TRANSLATIONS_SELECTOR = 'nacelle.core.utils.i18n.get_locale'
+
 # This setting exists purely for testing purposes
 TEST_SETTING = '12345'
