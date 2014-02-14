@@ -3,9 +3,12 @@
 help:
 	@echo "clean-build - remove build artifacts"
 	@echo "clean-pyc - remove Python file artifacts"
-	@echo "test - run tests quickly with the default Python"
 	@echo "docs - generate Sphinx HTML documentation, including API docs"
+	@echo "i18n-update - extracts new translations from source code and updates the .po files"
+	@echo "i18n-build - compiles .po into .mo files ready to be read by the app"
 	@echo "install-devenv - install backend development dependencies from pip"
+	@echo "run - run the local development server for testing/debugging"
+	@echo "test - run all of the app's tests and print a coverage report"
 
 clean-docs:
 	rm -f docs/nacelle.*
