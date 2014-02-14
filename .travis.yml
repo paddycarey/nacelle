@@ -15,7 +15,7 @@ before_script:
   - sudo ln -s `pwd`/.vendors/google_appengine/dev_appserver.py /usr/local/bin/dev_appserver.py
 
 # command to run tests, e.g. python setup.py test
-script: ./testrunner.sh
+script: make test
 
 # report coverage to coveralls after succesful build
 after_success:
