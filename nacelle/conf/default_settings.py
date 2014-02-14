@@ -40,3 +40,6 @@ ADDITIONAL_VENDOR_PATHS = ()
 
 # variables/functions to inject into any jinja template
 JINJA_GLOBALS = {'uri_for': webapp2.uri_for, 'logout_url': users.create_logout_url}
+
+# This setting exists purely for testing purposes
+TEST_SETTING = '12345'

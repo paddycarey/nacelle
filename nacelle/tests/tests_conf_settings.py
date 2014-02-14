@@ -14,7 +14,7 @@ class SettingsTests(NacelleTestCase):
         """Test getting a setting that exists
         """
         settings = webapp2.import_string('nacelle.conf.settings')
-        self.assertEqual(settings.ROUTES_MODULE, 'routes.ROUTES')
+        self.assertEqual(settings.TEST_SETTING, '12345')
 
     def test_get_invalid_setting(self):
         """Test that getting a setting that doesn't exist throws an AttributeError
