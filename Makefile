@@ -7,6 +7,7 @@ help:
 	@echo "i18n-update - extracts new translations from source code and updates the .po files"
 	@echo "i18n-build - compiles .po into .mo files ready to be read by the app"
 	@echo "install-devenv - install backend development dependencies from pip"
+	@echo "lint - run pep8 checks against the app's code"
 	@echo "run - run the local development server for testing/debugging"
 	@echo "test - run all of the app's tests and print a coverage report"
 
@@ -40,6 +41,9 @@ i18n-update: i18n-extract
 
 install-devenv:
 	pip install -r nacelle/requirements.txt
+
+lint:
+	pep8 --ignore=E501 --exclude=vendor,docs .
 
 run:
 	dev_appserver.py .
