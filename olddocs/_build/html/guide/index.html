@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>webapp2’s Guide to the Gaelaxy &mdash; Nacelle Microframework 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Nacelle Microframework 0.1.0 documentation" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">Nacelle Microframework 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="webapp2-s-guide-to-the-gaelaxy">
+<span id="guide-index"></span><h1>webapp2&#8217;s Guide to the Gaelaxy<a class="headerlink" href="#webapp2-s-guide-to-the-gaelaxy" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="app.html">The WSGI application</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.html#initialization">Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="app.html#router">Router</a></li>
+<li class="toctree-l2"><a class="reference internal" href="app.html#config">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="app.html#registry">Registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="app.html#error-handlers">Error handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="app.html#debug-flag">Debug flag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="app.html#thread-safe-application">Thread-safe application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="app.html#running-the-app">Running the app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="app.html#unit-testing">Unit testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="app.html#getting-the-current-app">Getting the current app</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exception handling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html#http-exceptions">HTTP exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html#exceptions-in-handlers">Exceptions in handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html#exceptions-in-the-wsgi-app">Exceptions in the WSGI app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html#abort">abort()</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="extras.html">webapp2_extras</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handlers.html">Request handlers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="handlers.html#handlers-101">Handlers 101</a></li>
+<li class="toctree-l2"><a class="reference internal" href="handlers.html#http-methods-translated-to-class-methods">HTTP methods translated to class methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="handlers.html#view-functions">View functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="handlers.html#returned-values">Returned values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="handlers.html#a-micro-framework-based-on-webapp2">A micro-framework based on webapp2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="handlers.html#overriding-init">Overriding __init__()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="handlers.html#overriding-dispatch">Overriding dispatch()</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="request.html">Request data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="request.html#get-data">GET data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="request.html#post-data">POST data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="request.html#get-post-data">GET + POST data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="request.html#files">Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="request.html#cookies">Cookies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="request.html#common-request-attributes">Common Request attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="request.html#extra-attributes">Extra attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="request.html#getting-the-current-request">Getting the current request</a></li>
+<li class="toctree-l2"><a class="reference internal" href="request.html#registry">Registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="request.html#learn-more-about-webob">Learn more about WebOb</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="response.html">Building a Response</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="response.html#setting-cookies">Setting cookies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="response.html#common-response-attributes">Common Response attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="response.html#learn-more-about-webob">Learn more about WebOb</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="routing.html">URI routing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="routing.html#simple-routes">Simple routes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="routing.html#extended-routes">Extended routes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="routing.html#the-url-template">The URL template</a></li>
+<li class="toctree-l3"><a class="reference internal" href="routing.html#lazy-handlers">Lazy handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="routing.html#custom-methods">Custom methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="routing.html#restricting-http-methods">Restricting HTTP methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="routing.html#restricting-uri-schemes">Restricting URI schemes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="routing.html#domain-and-subdomain-routing">Domain and subdomain routing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="routing.html#matching-only-www-or-anything-except-www">Matching only www, or anything except www</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="routing.html#path-prefix-routes">Path prefix routes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="routing.html#other-prefix-routes">Other prefix routes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="routing.html#building-uris">Building URIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="routing.html#routing-attributes-in-the-request-object">Routing attributes in the request object</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">Unit testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#request-blank">Request.blank()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#app-get-response">app.get_response()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#testing-app-engine-services">Testing App Engine services</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/guide/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../index.html">Nacelle Microframework 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Carey.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>

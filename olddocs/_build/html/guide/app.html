@@ -1,0 +1,359 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The WSGI application &mdash; Nacelle Microframework 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Nacelle Microframework 0.1.0 documentation" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">Nacelle Microframework 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="the-wsgi-application">
+<span id="guide-app"></span><h1>The WSGI application<a class="headerlink" href="#the-wsgi-application" title="Permalink to this headline">¶</a></h1>
+<p>The WSGI application receives requests and dispatches the appropriate handler,
+returning a response to the client. It stores the URI routes that the app will
+accept, configuration variables and registered objects that can be shared
+between requests. The WSGI app is also responsible for handling uncaught
+exceptions, avoiding that stack traces &#8220;leak&#8221; to the client when in production.
+Let&#8217;s take an in depth look at it now.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If the WSGI word looks totally unfamiliar to you, read the
+<a class="reference external" href="http://docs.webob.org/en/latest/do-it-yourself.html">Another Do-It-Yourself Framework</a> tutorial by Ian Bicking. It is a very
+recommended introduction to WSGI and you should at least take a quick look
+at the concepts, but following the whole tutorial is really worth.</p>
+<p class="last">A more advanced reading is the WSGI specification described in the
+<a class="reference external" href="http://www.python.org/dev/peps/pep-0333/">PEP 333</a>.</p>
+</div>
+<div class="section" id="initialization">
+<h2>Initialization<a class="headerlink" href="#initialization" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="xref py py-class docutils literal"><span class="pre">webapp2.WSGIApplication</span></tt> class is initialized with three optional
+arguments:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">routes</span></tt>: a list of route definitions as described in <a class="reference internal" href="routing.html#guide-routing"><em>URI routing</em></a>.</li>
+<li><tt class="docutils literal"><span class="pre">debug</span></tt>: a boolean flag that enables debug mode.</li>
+<li><tt class="docutils literal"><span class="pre">config</span></tt>: a dictionary of configuration values for the application.</li>
+</ul>
+<p>Compared to webapp, only config was added; it is used as a standard way to
+configure extra modules (sessions, internationalization, templates or your
+own app configuration values).</p>
+<p>Everything is pretty straighforward:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">webapp2</span>
+
+<span class="n">routes</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s">r&#39;/&#39;</span><span class="p">,</span> <span class="s">&#39;handlers.HelloWorldHandler&#39;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">config</span><span class="p">[</span><span class="s">&#39;webapp2_extras.sessions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;secret_key&#39;</span><span class="p">:</span> <span class="s">&#39;something-very-very-secret&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">WSGIApplication</span><span class="p">(</span><span class="n">routes</span><span class="o">=</span><span class="n">routes</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="router">
+<span id="guide-app-router"></span><h2>Router<a class="headerlink" href="#router" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="routing.html#guide-routing"><em>URI routing</em></a> is a central piece in webapp2, and its main component is
+the <tt class="xref py py-class docutils literal"><span class="pre">webapp2.Router</span></tt> object, available in the application as the
+<tt class="xref py py-attr docutils literal"><span class="pre">webapp2.WSGIApplication.router</span></tt> attribute.</p>
+<p>The router object is responsible for everything related to mapping URIs to
+handlers. The router:</p>
+<ul class="simple">
+<li>Stores registered &#8220;routes&#8221;, which map URIs to the application handlers
+that will handle those requests.</li>
+<li>Matches the current request against the registered routes and returns the
+handler to be used for that request (or raises a <tt class="docutils literal"><span class="pre">HTTPNotFound</span></tt> exception
+if no handler was found).</li>
+<li>Dispatches the matched handler, i.e., calling it and returning a response
+to the <tt class="docutils literal"><span class="pre">WSGIApplication</span></tt>.</li>
+<li>Builds URIs for the registered routes.</li>
+</ul>
+<p>Using the <tt class="docutils literal"><span class="pre">router</span></tt> attribute you can, for example, add new routes to the
+application after initialization using the <tt class="docutils literal"><span class="pre">add()</span></tt> method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">webapp2</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">WSGIApplication</span><span class="p">()</span>
+<span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="s">r&#39;/&#39;</span><span class="p">,</span> <span class="s">&#39;handlers.HelloWorldHandler&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The router has several methods to override how URIs are matched or built or how
+handlers are adapted or dispatched without even requiring subclassing. For an
+example of extending the default dispatching mechanism, see
+<a class="reference internal" href="handlers.html#guide-handlers-returned-values"><em>Request handlers: returned values</em></a>.</p>
+<p>Also check the <tt class="xref py py-class docutils literal"><span class="pre">Router</span> <span class="pre">API</span> <span class="pre">documentation</span></tt> for
+a description of the methods <tt class="xref py py-meth docutils literal"><span class="pre">webapp2.Router.set_matcher()</span></tt>,
+<tt class="xref py py-meth docutils literal"><span class="pre">webapp2.Router.set_dispatcher()</span></tt>, <tt class="xref py py-meth docutils literal"><span class="pre">webapp2.Router.set_adapter()</span></tt> and
+<tt class="xref py py-meth docutils literal"><span class="pre">webapp2.Router.set_builder()</span></tt>.</p>
+</div>
+<div class="section" id="config">
+<span id="guide-app-config"></span><h2>Config<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h2>
+<p>When instantiating the app, you can pass a configuration dictionary which is
+then accessible through the <tt class="xref py py-attr docutils literal"><span class="pre">webapp2.WSGIApplication.config</span></tt> attribute.
+A convention is to define configuration keys for each module, to avoid name
+clashes, but you can define them as you wish, really, unless the module
+requires a specific setup. First you define a configuration:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">webapp2</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;foo&#39;</span><span class="p">:</span> <span class="s">&#39;bar&#39;</span><span class="p">}</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">WSGIApplication</span><span class="p">(</span><span class="n">routes</span><span class="o">=</span><span class="p">[</span>
+    <span class="p">(</span><span class="s">r&#39;/&#39;</span><span class="p">,</span> <span class="s">&#39;handlers.MyHandler&#39;</span><span class="p">),</span>
+<span class="p">],</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then access it as you need. Inside a <tt class="docutils literal"><span class="pre">RequestHandler</span></tt>, for example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">webapp2</span>
+
+<span class="k">class</span> <span class="nc">MyHandler</span><span class="p">(</span><span class="n">webapp2</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">foo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;foo&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;foo value is </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">foo</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="registry">
+<span id="guide-app-registry"></span><h2>Registry<a class="headerlink" href="#registry" title="Permalink to this headline">¶</a></h2>
+<p>A simple dictionary is available in the application to register instances that
+are shared between requests: it is the <tt class="xref py py-attr docutils literal"><span class="pre">webapp2.WSGIApplication.registry</span></tt>
+attribute. It can be used by anything that your app requires and the intention
+is to avoid global variables in modules, so that you can have multiple app
+instances using different configurations: each app has its own extra instances
+for any kind of object that is shared between requests. A simple example that
+registers a fictitious <tt class="docutils literal"><span class="pre">MyParser</span></tt> instance if it is not yet registered:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">webapp2</span>
+
+<span class="k">def</span> <span class="nf">get_parser</span><span class="p">():</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">get_app</span><span class="p">()</span>
+    <span class="c"># Check if the instance is already registered.</span>
+    <span class="n">my_parser</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;my_parser&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">my_parser</span><span class="p">:</span>
+        <span class="c"># Import the class lazily.</span>
+        <span class="n">cls</span> <span class="o">=</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">import_string</span><span class="p">(</span><span class="s">&#39;my.module.MyParser&#39;</span><span class="p">)</span>
+        <span class="c"># Instantiate the imported class.</span>
+        <span class="n">my_parser</span> <span class="o">=</span> <span class="n">cls</span><span class="p">()</span>
+        <span class="c"># Register the instance in the registry.</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">registry</span><span class="p">[</span><span class="s">&#39;my_parser&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">my_parser</span>
+
+    <span class="k">return</span> <span class="n">my_parser</span>
+</pre></div>
+</div>
+<p>The registry can be used to lazily instantiate objects when needed, and keep a
+reference in the application to be reused.</p>
+<p>A registry dictionary is also available in the
+<a class="reference internal" href="request.html#guide-request-registry"><em>request object</em></a>, to store shared objects
+used during a single request.</p>
+</div>
+<div class="section" id="error-handlers">
+<h2>Error handlers<a class="headerlink" href="#error-handlers" title="Permalink to this headline">¶</a></h2>
+<p>As described in <a class="reference internal" href="exceptions.html#guide-exceptions"><em>Exception handling</em></a>, a dictionary is available in the app
+to register error handlers as the <tt class="xref py py-attr docutils literal"><span class="pre">webapp2.WSGIApplication.error_handlers</span></tt>
+attribute. They will be used as a last resource if exceptions are not caught
+by handlers. It is a good idea to set at least error handlers for 404 and 500
+status codes:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">webapp2</span>
+
+<span class="k">def</span> <span class="nf">handle_404</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">exception</span><span class="p">):</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">exception</span><span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;Oops! I could swear this page was here!&#39;</span><span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">handle_500</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">exception</span><span class="p">):</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">exception</span><span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;A server error occurred!&#39;</span><span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">WSGIApplication</span><span class="p">([</span>
+    <span class="n">webapp2</span><span class="o">.</span><span class="n">Route</span><span class="p">(</span><span class="s">r&#39;/&#39;</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="s">&#39;handlers.HomeHandler&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;home&#39;</span><span class="p">)</span>
+<span class="p">])</span>
+<span class="n">app</span><span class="o">.</span><span class="n">error_handlers</span><span class="p">[</span><span class="mi">404</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle_404</span>
+<span class="n">app</span><span class="o">.</span><span class="n">error_handlers</span><span class="p">[</span><span class="mi">500</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle_500</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="debug-flag">
+<h2>Debug flag<a class="headerlink" href="#debug-flag" title="Permalink to this headline">¶</a></h2>
+<p>A debug flag is passed to the WSGI application on instantiation and is
+available as the <tt class="xref py py-attr docutils literal"><span class="pre">webapp2.WSGIApplication.debug</span></tt> attribute. When in
+debug mode, any exception that is now caught is raised and the stack trace is
+displayed to the client, which helps debugging. When not in debug mode, a
+&#8216;500 Internal Server Error&#8217; is displayed instead.</p>
+<p>You can use that flag to set special behaviors for the application during
+development.</p>
+<p>For App Engine, it is possible to detect if the code is running using the SDK
+or in production checking the &#8216;SERVER_SOFTWARE&#8217; environ variable:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">webapp2</span>
+
+<span class="n">debug</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;SERVER_SOFTWARE&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;Dev&#39;</span><span class="p">)</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">WSGIApplication</span><span class="p">(</span><span class="n">routes</span><span class="o">=</span><span class="p">[</span>
+    <span class="p">(</span><span class="s">r&#39;/&#39;</span><span class="p">,</span> <span class="s">&#39;handlers.HelloWorldHandler&#39;</span><span class="p">),</span>
+<span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="thread-safe-application">
+<h2>Thread-safe application<a class="headerlink" href="#thread-safe-application" title="Permalink to this headline">¶</a></h2>
+<p>By default, webapp2 is thread-safe when the module
+<tt class="xref py py-class docutils literal"><span class="pre">webapp2_extras.local</span></tt> is available. This means that it can be used
+outside of App Engine or in the upcoming App Engine Python 2.7 runtime.
+This also works in non-threaded environments such as App Engine Python 2.5.</p>
+<p>See in the <em class="xref std std-ref">tutorials.quickstart.nogae</em> tutorial an explanation on how
+to use webapp2 outside of App Engine.</p>
+</div>
+<div class="section" id="running-the-app">
+<h2>Running the app<a class="headerlink" href="#running-the-app" title="Permalink to this headline">¶</a></h2>
+<p>The application is executed in a CGI environment using the method
+<tt class="xref py py-meth docutils literal"><span class="pre">webapp2.WSGIApplication.run()</span></tt>. When using App Engine, it uses
+the functions <tt class="docutils literal"><span class="pre">run_bare_wsgi_app</span></tt> or <tt class="docutils literal"><span class="pre">run_wsgi_app</span></tt> from
+<tt class="docutils literal"><span class="pre">google.appengine.ext.webapp.util</span></tt>. Outside of App Engine, it uses the
+<tt class="xref py py-mod docutils literal"><span class="pre">wsgiref.handlers</span></tt> module. Here&#8217;s the simplest example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">webapp2</span>
+
+<span class="k">class</span> <span class="nc">HelloWebapp2</span><span class="p">(</span><span class="n">webapp2</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;Hello, webapp2!&#39;</span><span class="p">)</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">WSGIApplication</span><span class="p">([</span>
+    <span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">HelloWebapp2</span><span class="p">),</span>
+<span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="unit-testing">
+<h2>Unit testing<a class="headerlink" href="#unit-testing" title="Permalink to this headline">¶</a></h2>
+<p>As described in <a class="reference internal" href="testing.html#guide-testing"><em>Unit testing</em></a>, the application has a convenience method
+to test handlers: <tt class="xref py py-meth docutils literal"><span class="pre">webapp2.WSGIApplication.get_response()</span></tt>. It
+receives the same parameters as <tt class="docutils literal"><span class="pre">Request.blank()</span></tt> to build a request and call
+the application, returning the resulting response from a handler:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">HelloHandler</span><span class="p">(</span><span class="n">webapp2</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;Hello, world!&#39;</span><span class="p">)</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">WSGIapplication</span><span class="p">([(</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">HelloHandler</span><span class="p">)])</span>
+
+<span class="c"># Test the app, passing parameters to build a request.</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_int</span> <span class="o">==</span> <span class="mi">200</span>
+<span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span> <span class="o">==</span> <span class="s">&#39;Hello, world!&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getting-the-current-app">
+<h2>Getting the current app<a class="headerlink" href="#getting-the-current-app" title="Permalink to this headline">¶</a></h2>
+<p>The active <tt class="docutils literal"><span class="pre">WSGIApplication</span></tt> instance can be accessed at any place of your
+app using the function <tt class="xref py py-func docutils literal"><span class="pre">webapp2.get_app()</span></tt>. This is useful, for example, to
+access the app registry or configuration values:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">webapp2</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">get_app</span><span class="p">()</span>
+<span class="n">config_value</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;my-config-key&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">The WSGI application</a><ul>
+<li><a class="reference internal" href="#initialization">Initialization</a></li>
+<li><a class="reference internal" href="#router">Router</a></li>
+<li><a class="reference internal" href="#config">Config</a></li>
+<li><a class="reference internal" href="#registry">Registry</a></li>
+<li><a class="reference internal" href="#error-handlers">Error handlers</a></li>
+<li><a class="reference internal" href="#debug-flag">Debug flag</a></li>
+<li><a class="reference internal" href="#thread-safe-application">Thread-safe application</a></li>
+<li><a class="reference internal" href="#running-the-app">Running the app</a></li>
+<li><a class="reference internal" href="#unit-testing">Unit testing</a></li>
+<li><a class="reference internal" href="#getting-the-current-app">Getting the current app</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/guide/app.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../index.html">Nacelle Microframework 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Carey.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>

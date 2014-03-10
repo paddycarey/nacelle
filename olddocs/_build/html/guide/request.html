@@ -1,0 +1,295 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Request data &mdash; Nacelle Microframework 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Nacelle Microframework 0.1.0 documentation" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">Nacelle Microframework 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="request-data">
+<span id="guide-request"></span><h1>Request data<a class="headerlink" href="#request-data" title="Permalink to this headline">¶</a></h1>
+<p>The request handler instance can access the request data using its <tt class="docutils literal"><span class="pre">request</span></tt>
+property. This is initialized to a populated <a class="reference external" href="http://docs.webob.org/">WebOb</a> <tt class="docutils literal"><span class="pre">Request</span></tt> object by
+the application.</p>
+<p>The request object provides a <tt class="docutils literal"><span class="pre">get()</span></tt> method that returns values for
+arguments parsed from the query and from POST data. The method takes the
+argument name as its first parameter. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyHandler</span><span class="p">(</span><span class="n">webapp2</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>By default, <tt class="docutils literal"><span class="pre">get()</span></tt> returns the empty string (<tt class="docutils literal"><span class="pre">''</span></tt>) if the requested
+argument is not in the request. If the parameter <tt class="docutils literal"><span class="pre">default_value</span></tt> is
+specified, <tt class="docutils literal"><span class="pre">get()</span></tt> returns the value of that parameter instead of the empty
+string if the argument is not present.</p>
+<p>If the argument appears more than once in a request, by default <tt class="docutils literal"><span class="pre">get()</span></tt>
+returns the first occurrence. To get all occurrences of an argument that might
+appear more than once as a list (possibly empty), give <tt class="docutils literal"><span class="pre">get()</span></tt> the argument
+<tt class="docutils literal"><span class="pre">allow_multiple=True</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># &lt;input name=&quot;name&quot; type=&quot;text&quot; /&gt;</span>
+<span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">)</span>
+
+<span class="c"># &lt;input name=&quot;subscribe&quot; type=&quot;checkbox&quot; value=&quot;yes&quot; /&gt;</span>
+<span class="n">subscribe_to_newsletter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;subscribe&quot;</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="s">&quot;no&quot;</span><span class="p">)</span>
+
+<span class="c"># &lt;select name=&quot;favorite_foods&quot; multiple=&quot;true&quot;&gt;...&lt;/select&gt;</span>
+<span class="n">favorite_foods</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;favorite_foods&quot;</span><span class="p">,</span> <span class="n">allow_multiple</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c"># for food in favorite_foods:</span>
+<span class="c"># ...</span>
+</pre></div>
+</div>
+<p>For requests with body content that is not a set of CGI parameters, such as
+the body of an HTTP PUT request, the request object provides the attributes
+<tt class="docutils literal"><span class="pre">body</span></tt> and <tt class="docutils literal"><span class="pre">body_file</span></tt>: <tt class="docutils literal"><span class="pre">body</span></tt> is the body content as a byte string and
+<tt class="docutils literal"><span class="pre">body_file</span></tt> provides a file-like interface to the same data:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">uploaded_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">body</span>
+</pre></div>
+</div>
+<div class="section" id="get-data">
+<h2>GET data<a class="headerlink" href="#get-data" title="Permalink to this headline">¶</a></h2>
+<p>Query string variables are available in <tt class="docutils literal"><span class="pre">request.GET</span></tt>.</p>
+<p><tt class="docutils literal"><span class="pre">.GET</span></tt> is a <a class="reference external" href="http://pythonpaste.org/webob/class-webob.multidict.MultiDict.html">MultiDict</a>: it is like a dictionary but the same key can have
+multiple values. When you call <tt class="docutils literal"><span class="pre">.get(key)</span></tt> for a key with multiple values,
+the last value is returned. To get all values for a key, use <tt class="docutils literal"><span class="pre">.getall(key)</span></tt>.
+Examples:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">request</span> <span class="o">=</span> <span class="n">Request</span><span class="o">.</span><span class="n">blank</span><span class="p">(</span><span class="s">&#39;/test?check=a&amp;check=b&amp;name=Bob&#39;</span><span class="p">)</span>
+
+<span class="c"># The whole MultiDict:</span>
+<span class="c"># GET([(&#39;check&#39;, &#39;a&#39;), (&#39;check&#39;, &#39;b&#39;), (&#39;name&#39;, &#39;Bob&#39;)])</span>
+<span class="n">get_values</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span>
+
+<span class="c"># The last value for a key: &#39;b&#39;</span>
+<span class="n">check_value</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">[</span><span class="s">&#39;check&#39;</span><span class="p">]</span>
+
+<span class="c"># All values for a key: [&#39;a&#39;, &#39;b&#39;]</span>
+<span class="n">check_values</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">getall</span><span class="p">(</span><span class="s">&#39;check&#39;</span><span class="p">)</span>
+
+<span class="c"># An iterable with alll items in the MultiDict:</span>
+<span class="c"># [(&#39;check&#39;, &#39;a&#39;), (&#39;check&#39;, &#39;b&#39;), (&#39;name&#39;, &#39;Bob&#39;)]</span>
+<span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The name <tt class="docutils literal"><span class="pre">GET</span></tt> is a bit misleading, but has historical reasons:
+<tt class="docutils literal"><span class="pre">request.GET</span></tt> is not only available when the HTTP method is GET. It is
+available for any request with query strings in the URI, for any HTTP method:
+GET, POST, PUT etc.</p>
+</div>
+<div class="section" id="post-data">
+<h2>POST data<a class="headerlink" href="#post-data" title="Permalink to this headline">¶</a></h2>
+<p>Variables url encoded in the body of a request (generally a POST form submitted
+using the <tt class="docutils literal"><span class="pre">application/x-www-form-urlencoded</span></tt> media type) are available in
+<tt class="docutils literal"><span class="pre">request.POST</span></tt>.</p>
+<p>It is also a <a class="reference external" href="http://pythonpaste.org/webob/class-webob.multidict.MultiDict.html">MultiDict</a> and can be accessed in the same way as <tt class="docutils literal"><span class="pre">.GET</span></tt>.
+Examples:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">request</span> <span class="o">=</span> <span class="n">Request</span><span class="o">.</span><span class="n">blank</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+<span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="s">&#39;POST&#39;</span>
+<span class="n">request</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="s">&#39;check=a&amp;check=b&amp;name=Bob&#39;</span>
+
+<span class="c"># The whole MultiDict:</span>
+<span class="c"># POST([(&#39;check&#39;, &#39;a&#39;), (&#39;check&#39;, &#39;b&#39;), (&#39;name&#39;, &#39;Bob&#39;)])</span>
+<span class="n">post_values</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span>
+
+<span class="c"># The last value for a key: &#39;b&#39;</span>
+<span class="n">check_value</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s">&#39;check&#39;</span><span class="p">]</span>
+
+<span class="c"># All values for a key: [&#39;a&#39;, &#39;b&#39;]</span>
+<span class="n">check_values</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">getall</span><span class="p">(</span><span class="s">&#39;check&#39;</span><span class="p">)</span>
+
+<span class="c"># An iterable with alll items in the MultiDict:</span>
+<span class="c"># [(&#39;check&#39;, &#39;a&#39;), (&#39;check&#39;, &#39;b&#39;), (&#39;name&#39;, &#39;Bob&#39;)]</span>
+<span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Like <tt class="docutils literal"><span class="pre">GET</span></tt>, the name <tt class="docutils literal"><span class="pre">POST</span></tt> is a somewjat misleading, but has historical
+reasons: they are also available when the HTTP method is PUT, and not only
+POST.</p>
+</div>
+<div class="section" id="get-post-data">
+<h2>GET + POST data<a class="headerlink" href="#get-post-data" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">request.params</span></tt> combines the variables from <tt class="docutils literal"><span class="pre">GET</span></tt> and <tt class="docutils literal"><span class="pre">POST</span></tt>. It can be
+used when you don&#8217;t care where the variable comes from.</p>
+</div>
+<div class="section" id="files">
+<h2>Files<a class="headerlink" href="#files" title="Permalink to this headline">¶</a></h2>
+<p>Uploaded files are available as <tt class="docutils literal"><span class="pre">cgi.FieldStorage</span></tt> (see the <tt class="xref py py-mod docutils literal"><span class="pre">cgi</span></tt>
+module) instances directly in <tt class="docutils literal"><span class="pre">request.POST</span></tt>.</p>
+</div>
+<div class="section" id="cookies">
+<span id="guide-request-cookies"></span><h2>Cookies<a class="headerlink" href="#cookies" title="Permalink to this headline">¶</a></h2>
+<p>Cookies can be accessed in <tt class="docutils literal"><span class="pre">request.cookies</span></tt>. It is a simple dictionary:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">request</span> <span class="o">=</span> <span class="n">Request</span><span class="o">.</span><span class="n">blank</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+<span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s">&#39;Cookie&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;test=value&#39;</span>
+
+<span class="c"># A value: &#39;value&#39;</span>
+<span class="n">cookie_value</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;test&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="response.html#guide-response-setting-cookies"><em>How to set cookies using the response object</em></a></p>
+</div>
+</div>
+<div class="section" id="common-request-attributes">
+<h2>Common Request attributes<a class="headerlink" href="#common-request-attributes" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>body</dt>
+<dd>A file-like object that gives the body of the request.</dd>
+<dt>content_type</dt>
+<dd>Content-type of the request body.</dd>
+<dt>method</dt>
+<dd>The HTTP method, e.g., &#8216;GET&#8217; or &#8216;POST&#8217;.</dd>
+<dt>url</dt>
+<dd>Full URI, e.g., <tt class="docutils literal"><span class="pre">'http://localhost/blog/article?id=1'</span></tt>.</dd>
+<dt>scheme</dt>
+<dd>URI scheme, e.g., &#8216;http&#8217; or &#8216;https&#8217;.</dd>
+<dt>host</dt>
+<dd>URI host, e.g., <tt class="docutils literal"><span class="pre">'localhost:80'</span></tt>.</dd>
+<dt>host_url</dt>
+<dd>URI host including scheme, e.g., <tt class="docutils literal"><span class="pre">'http://localhost'</span></tt>.</dd>
+<dt>path_url</dt>
+<dd>URI host including scheme and path, e.g., <tt class="docutils literal"><span class="pre">'http://localhost/blog/article'</span></tt>.</dd>
+<dt>path</dt>
+<dd>URI path, e.g., <tt class="docutils literal"><span class="pre">'/blog/article'</span></tt>.</dd>
+<dt>path_qs</dt>
+<dd>URI path including the query string, e.g., <tt class="docutils literal"><span class="pre">'/blog/article?id=1'</span></tt>.</dd>
+<dt>query_string</dt>
+<dd>Query string, e.g., <tt class="docutils literal"><span class="pre">id=1</span></tt>.</dd>
+<dt>headers</dt>
+<dd>A dictionary like object with request headers. Keys are case-insensitive.</dd>
+<dt>GET</dt>
+<dd>A dictionary-like object with variables from the query string, as unicode.</dd>
+<dt>POST</dt>
+<dd>A dictionary-like object with variables from a POST form, as unicode.</dd>
+<dt>params</dt>
+<dd>A dictionary-like object combining the variables GET and POST.</dd>
+<dt>cookies</dt>
+<dd>A dictionary-like object with cookie values.</dd>
+</dl>
+</div>
+<div class="section" id="extra-attributes">
+<h2>Extra attributes<a class="headerlink" href="#extra-attributes" title="Permalink to this headline">¶</a></h2>
+<p>The parameters from the matched <tt class="xref py py-class docutils literal"><span class="pre">webapp2.Route</span></tt> are set as attributes
+of the request object. They are <tt class="docutils literal"><span class="pre">request.route_args</span></tt>, for positional
+arguments, and <tt class="docutils literal"><span class="pre">request.route_kwargs</span></tt>, for keyword arguments. The matched
+route object is available as <tt class="docutils literal"><span class="pre">request.route</span></tt>.</p>
+<p>A reference to the active WSGI application is also set as an attribute of the
+request. You can access it in <tt class="docutils literal"><span class="pre">request.app</span></tt>.</p>
+</div>
+<div class="section" id="getting-the-current-request">
+<h2>Getting the current request<a class="headerlink" href="#getting-the-current-request" title="Permalink to this headline">¶</a></h2>
+<p>The active <tt class="docutils literal"><span class="pre">Request</span></tt> instance can be accessed during a request using the
+function <tt class="xref py py-func docutils literal"><span class="pre">webapp2.get_request()</span></tt>.</p>
+</div>
+<div class="section" id="registry">
+<span id="guide-request-registry"></span><h2>Registry<a class="headerlink" href="#registry" title="Permalink to this headline">¶</a></h2>
+<p>A simple dictionary is available in the request object to register instances
+that are shared during a request: it is the <tt class="xref py py-attr docutils literal"><span class="pre">webapp2.Request.registry</span></tt>
+attribute.</p>
+<p>A registry dictionary is also available in the
+<a class="reference internal" href="app.html#guide-app-registry"><em>WSGI application object</em></a>, to store objects shared
+across requests.</p>
+</div>
+<div class="section" id="learn-more-about-webob">
+<h2>Learn more about WebOb<a class="headerlink" href="#learn-more-about-webob" title="Permalink to this headline">¶</a></h2>
+<p>WebOb is an open source third-party library. See the <a class="reference external" href="http://docs.webob.org/">WebOb</a> documentation
+for a detailed API reference and examples.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Request data</a><ul>
+<li><a class="reference internal" href="#get-data">GET data</a></li>
+<li><a class="reference internal" href="#post-data">POST data</a></li>
+<li><a class="reference internal" href="#get-post-data">GET + POST data</a></li>
+<li><a class="reference internal" href="#files">Files</a></li>
+<li><a class="reference internal" href="#cookies">Cookies</a></li>
+<li><a class="reference internal" href="#common-request-attributes">Common Request attributes</a></li>
+<li><a class="reference internal" href="#extra-attributes">Extra attributes</a></li>
+<li><a class="reference internal" href="#getting-the-current-request">Getting the current request</a></li>
+<li><a class="reference internal" href="#registry">Registry</a></li>
+<li><a class="reference internal" href="#learn-more-about-webob">Learn more about WebOb</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/guide/request.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../index.html">Nacelle Microframework 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Carey.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>

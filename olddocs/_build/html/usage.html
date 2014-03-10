@@ -1,0 +1,485 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Using Nacelle &mdash; Nacelle Microframework 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Nacelle Microframework 0.1.0 documentation" href="index.html" />
+    <link rel="next" title="Contributing" href="contributing.html" />
+    <link rel="prev" title="Getting Started With Nacelle" href="getting_started.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="contributing.html" title="Contributing"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="getting_started.html" title="Getting Started With Nacelle"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Nacelle Microframework 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="using-nacelle">
+<h1>Using Nacelle<a class="headerlink" href="#using-nacelle" title="Permalink to this headline">¶</a></h1>
+<p>At its core, nacelle provides a thin layer on top of webapp2, this is evident when you begin to build your applications. For the most part, when you encounter a problem, your first port of call should be the <a class="reference external" href="http://webapp-improved.appspot.com/">webapp2</a> or <a class="reference external" href="http://jinja.pocoo.org/docs/templates/">jinja2</a> documentation.</p>
+<p>A nacelle app consists of 2 basic parts, routes and handlers. These are all that is required for a fully functioning nacelle application (a working example is included in the repository) but in practice you will likely require other components such as models, templates and utility classes/functions.</p>
+<div class="section" id="uri-routing">
+<h2>URI Routing<a class="headerlink" href="#uri-routing" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="simple-routing">
+<h3>Simple Routing<a class="headerlink" href="#simple-routing" title="Permalink to this headline">¶</a></h3>
+<p>The simplest form of URI route in nacelle is a tuple <tt class="docutils literal"><span class="pre">(regex,</span> <span class="pre">handler)</span></tt>, where <cite>regex</cite> is a regular expression to match the requested URI path and <cite>handler</cite> is a callable to handle the request. This routing mechanism is fully compatible with App Engine&#8217;s webapp (and webapp2) framework.</p>
+<p>Nacelle handlers can be any routable callable that returns a <tt class="docutils literal"><span class="pre">webapp2.Response</span></tt>, this means that regular functions can be used as handlers in addition to webapp2&#8217;s standard class-based handlers.</p>
+<p>This is how it works: a list of routes is registered in the in the location specified by nacelle&#8217;s settings (default <tt class="docutils literal"><span class="pre">routes.ROUTES</span></tt>). When the application receives a request, it tries to match each one in order until one matches, and then call the corresponding handler. Here, for example, we define three handlers and register three routes that point to those handlers:</p>
+<div class="highlight-python"><pre>~/app.py
+
+from webapp2 import Response
+
+def index(request):
+    return Response('Hello World!')
+
+class ProductHandler(webapp2.RequestHandler):
+    def get(self, product_id):
+        self.response.write('The product id is %s' % product_id)
+
+
+~/routes.py
+
+ROUTES = [
+    (r'/', 'app.index'),
+    (r'/products/(\d+)', 'app.ProductHandler'),
+])</pre>
+</div>
+<p>When a request comes in, the application will match the request path to find the corresponding handler. If no route matches, an <tt class="docutils literal"><span class="pre">HTTPException</span></tt> is raised with status code 404, and your application can handle it accordingly.</p>
+<p>The <cite>regex</cite> part is an ordinary regular expression (see the <tt class="xref py py-mod docutils literal"><span class="pre">re</span></tt> module) that can define groups inside parentheses. The matched group values are passed to the handler as positional arguments. In the example above, the last route defines a group, so the handler will receive the matched value when the route matches (one or more digits in this case).</p>
+<p>The <cite>handler</cite> part can be a direct reference to an imported module i.e. <tt class="docutils literal"><span class="pre">(r'/',</span> <span class="pre">somemodule.SomeHandler)</span></tt> but it can also be a string in dotted notation to be lazily imported when needed if you prefer.</p>
+<p>Simple routes are easy to use and enough for a lot of cases but don&#8217;t support keyword arguments, URI building, domain and subdomain matching, automatic redirection and other useful features. For this, nacelle offers the extended routing mechanism that we&#8217;ll see next.</p>
+</div>
+<div class="section" id="extended-routes">
+<h3>Extended routes<a class="headerlink" href="#extended-routes" title="Permalink to this headline">¶</a></h3>
+<p>nacelle introduces a routing mechanism that extends the webapp model to provide additional features:</p>
+<ul class="simple">
+<li><strong>URI building:</strong> the registered routes can be built when needed, avoiding hardcoded URIs in the app code and templates. If you change the route definition in a compatible way during development, all places that use that route will continue to point to the correct URI. This is less error prone and easier to maintain.</li>
+<li><strong>Keyword arguments:</strong> handlers can receive keyword arguments from the matched URIs. This is easier to use and also more maintanable than positional arguments.</li>
+<li><strong>Nested routes:</strong> routes can be extended to match more than the request path. We will see below a route class that can also match domains and subdomains.</li>
+</ul>
+<p>And several other features and benefits.</p>
+<p>The concept is similar to the simple routes we saw before, but instead of a
+tuple <tt class="docutils literal"><span class="pre">(regex,</span> <span class="pre">handler)</span></tt>, we define each route using the class
+<tt class="xref py py-class docutils literal"><span class="pre">webapp2.Route</span></tt>. Let&#8217;s remake our previous routes using it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ROUTES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">webapp2</span><span class="o">.</span><span class="n">Route</span><span class="p">(</span><span class="s">r&#39;/&#39;</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="s">&#39;app.index&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;index&#39;</span><span class="p">),</span>
+    <span class="n">webapp2</span><span class="o">.</span><span class="n">Route</span><span class="p">(</span><span class="s">r&#39;/products/&lt;product_id:\d+&gt;&#39;</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="s">&#39;app.ProductHandler&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;product&#39;</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>The first argument in the routes above is a <em class="xref std std-ref">URL template</em>, the <cite>handler</cite> argument is the <em class="xref std std-ref">request handler</em> to be used, and the <cite>name</cite> argument is a name used to build a URI for that route.</p>
+</div>
+<div class="section" id="the-url-template">
+<h3>The URL template<a class="headerlink" href="#the-url-template" title="Permalink to this headline">¶</a></h3>
+<p>The URL template defines the URL path to be matched. It can have regular expressions for variables using the syntax <tt class="docutils literal"><span class="pre">&lt;name:regex&gt;</span></tt>; everything outside of <tt class="docutils literal"><span class="pre">&lt;&gt;</span></tt> is not interpreted as a regular expression to be matched. Both name and regex are optional, like in the examples below:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="31%" />
+<col width="69%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Format</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">&lt;name&gt;</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">'/blog/&lt;year&gt;/&lt;month&gt;'</span></tt></td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">&lt;:regex&gt;</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">'/blog/&lt;:\d{4}&gt;/&lt;:\d{2}&gt;'</span></tt></td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">&lt;name:regex&gt;</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">'/blog/&lt;year:\d{4}&gt;/&lt;month:\d{2}&gt;'</span></tt></td>
+</tr>
+</tbody>
+</table>
+<p>The same template can mix parts with name, regular expression or both.</p>
+<p>The name, if defined, is used to build URLs for the route. When it is set, the value of the matched regular expression is passed as keyword argument to the handler. Otherwise it is passed as a positional argument.</p>
+<p>If only the name is set, it will match anything except a slash. So these routes are equivalent:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Route</span><span class="p">(</span><span class="s">&#39;/&lt;user_id&gt;/settings&#39;</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="n">SettingsHandler</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;user-settings&#39;</span><span class="p">)</span>
+<span class="n">Route</span><span class="p">(</span><span class="s">&#39;/&lt;user_id:[^/]+&gt;/settings&#39;</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="n">SettingsHandler</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;user-settings&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The handler only receives <tt class="docutils literal"><span class="pre">*args</span></tt> if no named variables are set. Otherwise, the handler only receives <tt class="docutils literal"><span class="pre">**kwargs</span></tt>. This allows you to set regular expressions that are not captured: just mix named and unnamed variables and the handler will only receive the named ones.</p>
+</div>
+</div>
+<div class="section" id="advanced-routing">
+<h3>Advanced Routing<a class="headerlink" href="#advanced-routing" title="Permalink to this headline">¶</a></h3>
+<p>Please see the <a class="reference external" href="http://webapp-improved.appspot.com/">webapp2</a> documentation for more advanced routing techniques.</p>
+</div>
+</div>
+<div class="section" id="request-handlers">
+<h2>Request handlers<a class="headerlink" href="#request-handlers" title="Permalink to this headline">¶</a></h2>
+<p>In nacelle/webapp2 vocabulary, <cite>request handler</cite> or simply <cite>handler</cite> is a common term that refers to the callable that contains the application logic to handle a request. This sounds very abstract, but we will explain everything in detail below.</p>
+<div class="section" id="handlers-101">
+<h3>Handlers 101<a class="headerlink" href="#handlers-101" title="Permalink to this headline">¶</a></h3>
+<p>A handler is equivalent to the <cite>Controller</cite> in the <a class="reference external" href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</a> terminology: in a simplified manner, it is where you process the request, manipulate data and define a response to be returned to the client: HTML, JSON, XML, files or whatever the app requires.</p>
+<p>Normally a handler is a class that extends <tt class="xref py py-class docutils literal"><span class="pre">webapp2.RequestHandler</span></tt> or, for compatibility purposes, <tt class="docutils literal"><span class="pre">webapp.RequestHandler</span></tt>. Here is a simple one:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ProductHandler</span><span class="p">(</span><span class="n">webapp2</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product_id</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;You requested product </span><span class="si">%r</span><span class="s">.&#39;</span> <span class="o">%</span> <span class="n">product_id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This code defines one request handler, <tt class="docutils literal"><span class="pre">ProductHandler</span></tt>. When the application receives an HTTP request to a path the route for this handler, it instantiates the handler and calls the corresponding HTTP method from it. The handler above can only handle <tt class="docutils literal"><span class="pre">GET</span></tt> HTTP requests, as it only defines a <tt class="docutils literal"><span class="pre">get()</span></tt> method. To handle <tt class="docutils literal"><span class="pre">POST</span></tt> requests, it would need to implement a <tt class="docutils literal"><span class="pre">post()</span></tt> method, and so on.</p>
+<p>The handler method receives a <tt class="docutils literal"><span class="pre">product_id</span></tt> extracted from the URI, and outputs a simple message containing the id as response. Not very useful, but this is just to show how it works. In a more complete example, the handler would fetch a corresponding record from a database and output an appropriate response &#8211; HTML, JSON or XML with details about the requested product, for example.</p>
+</div>
+<div class="section" id="http-methods-translated-to-class-methods">
+<h3>HTTP methods translated to class methods<a class="headerlink" href="#http-methods-translated-to-class-methods" title="Permalink to this headline">¶</a></h3>
+<p>The default behavior of the <tt class="xref py py-class docutils literal"><span class="pre">webapp2.RequestHandler</span></tt> is to call a method that corresponds with the HTTP action of the request, such as the <tt class="docutils literal"><span class="pre">get()</span></tt> method for a HTTP GET request. The method processes the request and prepares a response, then returns. Finally, the application sends the response to the client.</p>
+<p>The following example defines a request handler that responds to HTTP GET requests:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">AddTwoNumbers</span><span class="p">(</span><span class="n">webapp2</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">first</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;first&#39;</span><span class="p">))</span>
+            <span class="n">second</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;second&#39;</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;&lt;html&gt;&lt;body&gt;&lt;p&gt;</span><span class="si">%d</span><span class="s"> + </span><span class="si">%d</span><span class="s"> = </span><span class="si">%d</span><span class="s">&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;&quot;</span> <span class="o">%</span>
+                                    <span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">first</span> <span class="o">+</span> <span class="n">second</span><span class="p">))</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;&lt;html&gt;&lt;body&gt;&lt;p&gt;Invalid inputs&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A request handler can define any of the following methods to handle the
+corresponding HTTP actions:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">get()</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">post()</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">head()</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">options()</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">put()</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">delete()</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">trace()</span></tt></li>
+</ul>
+</div>
+<div class="section" id="view-functions">
+<h3>View functions<a class="headerlink" href="#view-functions" title="Permalink to this headline">¶</a></h3>
+<p>In some Python frameworks, handlers are called <cite>view functions</cite> or simply <cite>views</cite>. In Django, for example, <cite>views</cite> are normally simple functions that handle a request. Our examples use mostly classes, but nacelle handlers can also be normal functions equivalent to Django&#8217;s <cite>views</cite>. nacelle currently encourages a functional style as most of its tools have been built to work with this style of handler, however, in future nacelle&#8217;s tools should work with any type of handler.</p>
+<p>A nacelle handler can, really, be <strong>any</strong> callable. The routing system has hooks to adapt how handlers are called, and two default adapters are used whether it is a function or a class. The following example demonstrates this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">display_product</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="s">&#39;You requested product </span><span class="si">%r</span><span class="s">.&#39;</span> <span class="o">%</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Here, our handler is a simple function that receives the request instance, positional route variables as <tt class="docutils literal"><span class="pre">*args</span></tt> and named variables as <tt class="docutils literal"><span class="pre">**kwargs</span></tt>, if they are defined.</p>
+<p>Functions are an alternative for those that prefer their simplicity or think that handlers don&#8217;t benefit that much from the power and flexibility provided by classes: inheritance, attributes, grouped methods, descriptors, metaclasses, etc. An app can have mixed handler classes and functions.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">We avoid using the term <cite>view</cite> because it is often confused with the <cite>View</cite> definition from the classic <cite>MVC</cite> pattern. Django prefers to call its <cite>MVC</cite> implementation <cite>MTV</cite> (model-template-view), so <cite>view</cite> may make sense in their terminology. Still, we think that the term can cause unnecessary confusion and prefer to use <cite>handler</cite> instead, like in other Python frameworks (webapp, web.py or Tornado, for instance). In essence, though, they are synonyms.</p>
+</div>
+</div>
+<div class="section" id="returned-values">
+<h3>Returned values<a class="headerlink" href="#returned-values" title="Permalink to this headline">¶</a></h3>
+<p>A handler method doesn&#8217;t need to return anything: it can simply write to the response object using <tt class="docutils literal"><span class="pre">self.response.write()</span></tt>.</p>
+<p>But a handler <strong>can</strong> return values to be used in the response. Using the default dispatcher implementation, if a handler returns anything that is not <tt class="docutils literal"><span class="pre">None</span></tt> it <strong>must</strong> be a <tt class="xref py py-class docutils literal"><span class="pre">webapp2.Response</span></tt> instance. If it does so, that response object is used instead of the default one.</p>
+<p>For example, let&#8217;s return a response object with a <cite>Hello, world</cite> message:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">HelloHandler</span><span class="p">(</span><span class="n">webapp2</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">webapp2</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="s">&#39;Hello, world!&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is the same as:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">HelloHandler</span><span class="p">(</span><span class="n">webapp2</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;Hello, world!&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="overriding-init">
+<h3>Overriding __init__()<a class="headerlink" href="#overriding-init" title="Permalink to this headline">¶</a></h3>
+<p>If you want to override the <tt class="xref py py-meth docutils literal"><span class="pre">webapp2.RequestHandler.__init__()</span></tt> method, you must call <tt class="xref py py-meth docutils literal"><span class="pre">webapp2.RequestHandler.initialize()</span></tt> at the beginning of the method. It&#8217;ll set the current request, response and app objects as attributes of the handler. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyHandler</span><span class="p">(</span><span class="n">webapp2</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="c"># Set self.request, self.response and self.app.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="c"># ... add your custom initializations here ...</span>
+        <span class="c"># ...</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="request-data">
+<h2>Request data<a class="headerlink" href="#request-data" title="Permalink to this headline">¶</a></h2>
+<p>The request handler instance can access the request data using its <tt class="docutils literal"><span class="pre">request</span></tt> property. This is initialized to a populated <a class="reference external" href="http://docs.webob.org/">WebOb</a> <tt class="docutils literal"><span class="pre">Request</span></tt> object by the application.</p>
+<p>The request object provides a <tt class="docutils literal"><span class="pre">get()</span></tt> method that returns values for arguments parsed from the query and from POST data. The method takes the argument name as its first parameter. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyHandler</span><span class="p">(</span><span class="n">webapp2</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">my_handler</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>By default, <tt class="docutils literal"><span class="pre">get()</span></tt> returns the empty string (<tt class="docutils literal"><span class="pre">''</span></tt>) if the requested argument is not in the request. If the parameter <tt class="docutils literal"><span class="pre">default_value</span></tt> is specified, <tt class="docutils literal"><span class="pre">get()</span></tt> returns the value of that parameter instead of the empty string if the argument is not present.</p>
+<p>If the argument appears more than once in a request, by default <tt class="docutils literal"><span class="pre">get()</span></tt> returns the first occurrence. To get all occurrences of an argument that might appear more than once as a list (possibly empty), give <tt class="docutils literal"><span class="pre">get()</span></tt> the argument <tt class="docutils literal"><span class="pre">allow_multiple=True</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># &lt;input name=&quot;name&quot; type=&quot;text&quot; /&gt;</span>
+<span class="n">name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">)</span>
+
+<span class="c"># &lt;input name=&quot;subscribe&quot; type=&quot;checkbox&quot; value=&quot;yes&quot; /&gt;</span>
+<span class="n">subscribe_to_newsletter</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;subscribe&quot;</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="s">&quot;no&quot;</span><span class="p">)</span>
+
+<span class="c"># &lt;select name=&quot;favorite_foods&quot; multiple=&quot;true&quot;&gt;...&lt;/select&gt;</span>
+<span class="n">favorite_foods</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;favorite_foods&quot;</span><span class="p">,</span> <span class="n">allow_multiple</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c"># for food in favorite_foods:</span>
+<span class="c"># ...</span>
+</pre></div>
+</div>
+<p>For requests with body content that is not a set of CGI parameters, such as the body of an HTTP PUT request, the request object provides the attributes <tt class="docutils literal"><span class="pre">body</span></tt> and <tt class="docutils literal"><span class="pre">body_file</span></tt>: <tt class="docutils literal"><span class="pre">body</span></tt> is the body content as a byte string and <tt class="docutils literal"><span class="pre">body_file</span></tt> provides a file-like interface to the same data:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">uploaded_file</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span>
+</pre></div>
+</div>
+<div class="section" id="get-data">
+<h3>GET data<a class="headerlink" href="#get-data" title="Permalink to this headline">¶</a></h3>
+<p>Query string variables are available in <tt class="docutils literal"><span class="pre">request.GET</span></tt>.</p>
+<p><tt class="docutils literal"><span class="pre">.GET</span></tt> is a <a class="reference external" href="http://pythonpaste.org/webob/class-webob.multidict.MultiDict.html">MultiDict</a>: it is like a dictionary but the same key can have multiple values. When you call <tt class="docutils literal"><span class="pre">.get(key)</span></tt> for a key with multiple values, the last value is returned. To get all values for a key, use <tt class="docutils literal"><span class="pre">.getall(key)</span></tt>. Examples:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">request</span> <span class="o">=</span> <span class="n">Request</span><span class="o">.</span><span class="n">blank</span><span class="p">(</span><span class="s">&#39;/test?check=a&amp;check=b&amp;name=Bob&#39;</span><span class="p">)</span>
+
+<span class="c"># The whole MultiDict:</span>
+<span class="c"># GET([(&#39;check&#39;, &#39;a&#39;), (&#39;check&#39;, &#39;b&#39;), (&#39;name&#39;, &#39;Bob&#39;)])</span>
+<span class="n">get_values</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span>
+
+<span class="c"># The last value for a key: &#39;b&#39;</span>
+<span class="n">check_value</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">[</span><span class="s">&#39;check&#39;</span><span class="p">]</span>
+
+<span class="c"># All values for a key: [&#39;a&#39;, &#39;b&#39;]</span>
+<span class="n">check_values</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">getall</span><span class="p">(</span><span class="s">&#39;check&#39;</span><span class="p">)</span>
+
+<span class="c"># An iterable with alll items in the MultiDict:</span>
+<span class="c"># [(&#39;check&#39;, &#39;a&#39;), (&#39;check&#39;, &#39;b&#39;), (&#39;name&#39;, &#39;Bob&#39;)]</span>
+<span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The name <tt class="docutils literal"><span class="pre">GET</span></tt> is a bit misleading, but has historical reasons: <tt class="docutils literal"><span class="pre">request.GET</span></tt> is not only available when the HTTP method is GET. It is available for any request with query strings in the URI, for any HTTP method: GET, POST, PUT etc.</p>
+</div>
+<div class="section" id="post-data">
+<h3>POST data<a class="headerlink" href="#post-data" title="Permalink to this headline">¶</a></h3>
+<p>Variables url encoded in the body of a request (generally a POST form submitted using the <tt class="docutils literal"><span class="pre">application/x-www-form-urlencoded</span></tt> media type) are available in <tt class="docutils literal"><span class="pre">request.POST</span></tt>.</p>
+<p>It is also a <a class="reference external" href="http://pythonpaste.org/webob/class-webob.multidict.MultiDict.html">MultiDict</a> and can be accessed in the same way as <tt class="docutils literal"><span class="pre">.GET</span></tt>. Examples:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">request</span> <span class="o">=</span> <span class="n">Request</span><span class="o">.</span><span class="n">blank</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+<span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="s">&#39;POST&#39;</span>
+<span class="n">request</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="s">&#39;check=a&amp;check=b&amp;name=Bob&#39;</span>
+
+<span class="c"># The whole MultiDict:</span>
+<span class="c"># POST([(&#39;check&#39;, &#39;a&#39;), (&#39;check&#39;, &#39;b&#39;), (&#39;name&#39;, &#39;Bob&#39;)])</span>
+<span class="n">post_values</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span>
+
+<span class="c"># The last value for a key: &#39;b&#39;</span>
+<span class="n">check_value</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s">&#39;check&#39;</span><span class="p">]</span>
+
+<span class="c"># All values for a key: [&#39;a&#39;, &#39;b&#39;]</span>
+<span class="n">check_values</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">getall</span><span class="p">(</span><span class="s">&#39;check&#39;</span><span class="p">)</span>
+
+<span class="c"># An iterable with alll items in the MultiDict:</span>
+<span class="c"># [(&#39;check&#39;, &#39;a&#39;), (&#39;check&#39;, &#39;b&#39;), (&#39;name&#39;, &#39;Bob&#39;)]</span>
+<span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Like <tt class="docutils literal"><span class="pre">GET</span></tt>, the name <tt class="docutils literal"><span class="pre">POST</span></tt> is a somewjat misleading, but has historical reasons: they are also available when the HTTP method is PUT, and not only POST.</p>
+</div>
+<div class="section" id="get-post-data">
+<h3>GET + POST data<a class="headerlink" href="#get-post-data" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">request.params</span></tt> combines the variables from <tt class="docutils literal"><span class="pre">GET</span></tt> and <tt class="docutils literal"><span class="pre">POST</span></tt>. It can be used when you don&#8217;t care where the variable comes from.</p>
+</div>
+<div class="section" id="files">
+<h3>Files<a class="headerlink" href="#files" title="Permalink to this headline">¶</a></h3>
+<p>Uploaded files are available as <tt class="docutils literal"><span class="pre">cgi.FieldStorage</span></tt> (see the <tt class="xref py py-mod docutils literal"><span class="pre">cgi</span></tt> module) instances directly in <tt class="docutils literal"><span class="pre">request.POST</span></tt>.</p>
+</div>
+<div class="section" id="cookies">
+<h3>Cookies<a class="headerlink" href="#cookies" title="Permalink to this headline">¶</a></h3>
+<p>Cookies can be accessed in <tt class="docutils literal"><span class="pre">request.cookies</span></tt>. It is a simple dictionary:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">request</span> <span class="o">=</span> <span class="n">Request</span><span class="o">.</span><span class="n">blank</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+<span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s">&#39;Cookie&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;test=value&#39;</span>
+
+<span class="c"># A value: &#39;value&#39;</span>
+<span class="n">cookie_value</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;test&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="common-request-attributes">
+<h3>Common Request attributes<a class="headerlink" href="#common-request-attributes" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>body</dt>
+<dd>A file-like object that gives the body of the request.</dd>
+<dt>content_type</dt>
+<dd>Content-type of the request body.</dd>
+<dt>method</dt>
+<dd>The HTTP method, e.g., &#8216;GET&#8217; or &#8216;POST&#8217;.</dd>
+<dt>url</dt>
+<dd>Full URI, e.g., <tt class="docutils literal"><span class="pre">'http://localhost/blog/article?id=1'</span></tt>.</dd>
+<dt>scheme</dt>
+<dd>URI scheme, e.g., &#8216;http&#8217; or &#8216;https&#8217;.</dd>
+<dt>host</dt>
+<dd>URI host, e.g., <tt class="docutils literal"><span class="pre">'localhost:80'</span></tt>.</dd>
+<dt>host_url</dt>
+<dd>URI host including scheme, e.g., <tt class="docutils literal"><span class="pre">'http://localhost'</span></tt>.</dd>
+<dt>path_url</dt>
+<dd>URI host including scheme and path, e.g., <tt class="docutils literal"><span class="pre">'http://localhost/blog/article'</span></tt>.</dd>
+<dt>path</dt>
+<dd>URI path, e.g., <tt class="docutils literal"><span class="pre">'/blog/article'</span></tt>.</dd>
+<dt>path_qs</dt>
+<dd>URI path including the query string, e.g., <tt class="docutils literal"><span class="pre">'/blog/article?id=1'</span></tt>.</dd>
+<dt>query_string</dt>
+<dd>Query string, e.g., <tt class="docutils literal"><span class="pre">id=1</span></tt>.</dd>
+<dt>headers</dt>
+<dd>A dictionary like object with request headers. Keys are case-insensitive.</dd>
+<dt>GET</dt>
+<dd>A dictionary-like object with variables from the query string, as unicode.</dd>
+<dt>POST</dt>
+<dd>A dictionary-like object with variables from a POST form, as unicode.</dd>
+<dt>params</dt>
+<dd>A dictionary-like object combining the variables GET and POST.</dd>
+<dt>cookies</dt>
+<dd>A dictionary-like object with cookie values.</dd>
+</dl>
+</div>
+<div class="section" id="extra-attributes">
+<h3>Extra attributes<a class="headerlink" href="#extra-attributes" title="Permalink to this headline">¶</a></h3>
+<p>The parameters from the matched <tt class="xref py py-class docutils literal"><span class="pre">webapp2.Route</span></tt> are set as attributes of the request object. They are <tt class="docutils literal"><span class="pre">request.route_args</span></tt>, for positional arguments, and <tt class="docutils literal"><span class="pre">request.route_kwargs</span></tt>, for keyword arguments. The matched route object is available as <tt class="docutils literal"><span class="pre">request.route</span></tt>.</p>
+<p>A reference to the active WSGI application is also set as an attribute of the request. You can access it in <tt class="docutils literal"><span class="pre">request.app</span></tt>.</p>
+</div>
+<div class="section" id="getting-the-current-request">
+<h3>Getting the current request<a class="headerlink" href="#getting-the-current-request" title="Permalink to this headline">¶</a></h3>
+<p>The active <tt class="docutils literal"><span class="pre">Request</span></tt> instance can be accessed during a request using the function <tt class="xref py py-func docutils literal"><span class="pre">webapp2.get_request()</span></tt>.</p>
+</div>
+<div class="section" id="registry">
+<h3>Registry<a class="headerlink" href="#registry" title="Permalink to this headline">¶</a></h3>
+<p>A simple dictionary is available in the request object to register instances that are shared during a request: it is the <tt class="xref py py-attr docutils literal"><span class="pre">webapp2.Request.registry</span></tt> attribute.</p>
+<p>A registry dictionary is also available in the <a class="reference internal" href="guide/app.html#guide-app-registry"><em>WSGI application object</em></a>, to store objects shared across requests.</p>
+</div>
+<div class="section" id="learn-more-about-webob">
+<h3>Learn more about WebOb<a class="headerlink" href="#learn-more-about-webob" title="Permalink to this headline">¶</a></h3>
+<p>WebOb is an open source third-party library. See the <a class="reference external" href="http://docs.webob.org/">WebOb</a> documentation for a detailed API reference and examples.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Using Nacelle</a><ul>
+<li><a class="reference internal" href="#uri-routing">URI Routing</a><ul>
+<li><a class="reference internal" href="#simple-routing">Simple Routing</a></li>
+<li><a class="reference internal" href="#extended-routes">Extended routes</a></li>
+<li><a class="reference internal" href="#the-url-template">The URL template</a></li>
+<li><a class="reference internal" href="#advanced-routing">Advanced Routing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#request-handlers">Request handlers</a><ul>
+<li><a class="reference internal" href="#handlers-101">Handlers 101</a></li>
+<li><a class="reference internal" href="#http-methods-translated-to-class-methods">HTTP methods translated to class methods</a></li>
+<li><a class="reference internal" href="#view-functions">View functions</a></li>
+<li><a class="reference internal" href="#returned-values">Returned values</a></li>
+<li><a class="reference internal" href="#overriding-init">Overriding __init__()</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#request-data">Request data</a><ul>
+<li><a class="reference internal" href="#get-data">GET data</a></li>
+<li><a class="reference internal" href="#post-data">POST data</a></li>
+<li><a class="reference internal" href="#get-post-data">GET + POST data</a></li>
+<li><a class="reference internal" href="#files">Files</a></li>
+<li><a class="reference internal" href="#cookies">Cookies</a></li>
+<li><a class="reference internal" href="#common-request-attributes">Common Request attributes</a></li>
+<li><a class="reference internal" href="#extra-attributes">Extra attributes</a></li>
+<li><a class="reference internal" href="#getting-the-current-request">Getting the current request</a></li>
+<li><a class="reference internal" href="#registry">Registry</a></li>
+<li><a class="reference internal" href="#learn-more-about-webob">Learn more about WebOb</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="getting_started.html"
+                        title="previous chapter">Getting Started With Nacelle</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="contributing.html"
+                        title="next chapter">Contributing</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/usage.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="contributing.html" title="Contributing"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="getting_started.html" title="Getting Started With Nacelle"
+             >previous</a> |</li>
+        <li><a href="index.html">Nacelle Microframework 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Carey.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>
