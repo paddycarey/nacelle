@@ -2,6 +2,7 @@
 
 help:
 	@echo "docs - generate Sphinx HTML documentation, including API docs"
+	@echo "install-devenv - install backend development dependencies from pip"
 	@echo "test - run all of the app's tests and print a coverage report"
 
 clean-docs:
@@ -17,6 +18,9 @@ clean:
 docs: clean-docs
 	$(MAKE) -C docs html
 	xdg-open docs/_build/html/index.html
+
+install-devenv:
+	pip install -r nacelle/requirements.txt
 
 test:
 	cd example; $(MAKE) test
