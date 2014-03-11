@@ -1,40 +1,29 @@
-# A crines animaeque robora quadripedis soror bubus
+# Nacelle Microframework
 
-## Cuncta dextra canat virtute me peto nec
+![Appengine](http://i.imgur.com/9N2DNQn.png)
 
-Lorem markdownum *memor*, Typhoeus more times adoleret mecum fuit stabat proles!
-Et habenas fortissime adfusique quis caeruleas regina; sub nostra altis parte is
-*inquit*; ergo his madida rex terna. Dimittit argenti.
+A lightweight python microframework built on top of webapp2 for use on Google Appengine
 
-> Quarum ave rigida adhaesit [et datae](http://zombo.com/) dumque cepit aere
-> posset volucrem inmittam fuerat; ora vescitur prima. **Et motis ter**
-> perlucentibus et summo, loco dispar vincemur inarata edidit? Prensantem sed
-> qua super falsam animosos. Fidibusque parens, paulum loquendi in plura
-> sacrorum decimum face, urbem *oblitus* sulphure Scylaceaque.
 
-## Ter et enixa
+## Overview
 
-Dum ingeniis habendus iuvenaliter primo: Numam sinistro petisses ventre, nato te
-[mihi](http://www.wtfpl.net/) sucos. Est Pisaeae illos.
+Nacelle aims to provide a small but solid set of tools that enable developers to quickly get a new app up and running, whilst not sacrificing any of the flexibility and power of webapp2 in the process. Nacelle is suitable for building everything from tiny prototypes to large complex applications, it should never get in your way.
 
-Rupe Themis prosit Marte, flet altos erroribus manerem sopor posset, pericula.
-Non vulgares vocat digna senior!
+**Nacelle is free software released under the [MIT License](http://opensource.org/licenses/MIT)**
 
-## Ultima formicas
 
-Vincta Vix violasse nimiumque petitos videt. Nam mixta, Olympi, solvit, **summo
-inpetus dextera**, membra coeperunt: alis. Arida medius loquendo *inscius
-moveri* audit, circumstant *si* cui. Texitur fuit, tua cur Attis quos fallax
-cursu est restant suum iam abdita eumque atque; ipse. Gutture subito per Eurotas
-sine.
+## Features
 
-> Prior et potitus toro Anius recepit nisi mora priscis leves. Suoque decipiat
-> trunca, et currus artior adero torrem ne.
+- Authentication using Appengine's built-in users service
+- Custom testrunner to help with loading the appengine environment for nose
+- Error handling (with optional logging to a sentry server)
+- Session management and automatic secret key generation
+- Template rendering (with Jinja2 or Handlebars)
+- Easily run tasks in the background outside of the request loop
 
-Quam **sumpserat**, quid artesque ululatuque nitidum bracchia pavetque, vident
-est fidumque et et illo hic, mortale. Quique animosque viribus *putaret
-maledictaque* comitumque elisa. Boum utque patientem horruerant interdumque
-Turno ab manifesta famam nisi ergo nequiquam Tremorque annis.
 
-[et datae]: http://zombo.com/
-[mihi]: http://www.wtfpl.net/
+## Sorry
+
+On one final note, I've been pretty atrocious at maintaining any semblance of backwards compatibility in nacelle since its inception, that needs to change. As nacelle begins to stabilise and approach a 1.0 release, the public API should also begin to settle down. Following a 1.0 release nacelle will follow a semantic versioning scheme to help identify releases with major, breaking changes.
+
+For now though, you've been warned.
