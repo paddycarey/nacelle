@@ -1,0 +1,11 @@
+site_name: Nacelle Microframework
+dev_addr: 127.0.0.1:6060
+repo_url: https://github.com/rehabstudio/nacelle
+pages:
+- ['index.md', 'Home']
+- ['getting_started.md', 'Getting Started']
+- ['guide/app.md', 'User Guide', 'The WSGI Application']
+- ['guide/routing.md', 'User Guide', 'URI Routing']
+- ['about/contributing.md', 'About', 'Contributing to Nacelle']
+- ['about/credits.md', 'About', 'Credits']
+- ['about/license.md', 'About', 'License']
