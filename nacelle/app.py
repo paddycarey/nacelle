@@ -5,6 +5,7 @@ Main WSGI entry point to Nacelle
 from __future__ import absolute_import
 
 # stdlib imports
+import itertools
 import sys
 
 # third-party imports
@@ -24,6 +25,11 @@ routes = webapp2.import_string(settings.ROUTES_MODULE)
 dispatcher = webapp2.import_string(settings.DISPATCHER_MODULE)
 error_handler = webapp2.import_string(settings.ERROR_HANDLER_MODULE)
 secret_key_store = webapp2.import_string('nacelle.core.sessions.models.SecretKey')
+
+# some of nacelle's contrib apps have routes, so we need to make sure and
+# append those to our routes list before passing it into the WSGI app
+mail_routes = webapp2.import_string('nacelle.contrib.mail.routes.ROUTES')
+routes = list(itertools.chain(routes, mail_routes))
 
 # Define our WSGI app so GAE can run it
 wsgi = webapp2.WSGIApplication(routes, debug=settings.DEBUG, config={

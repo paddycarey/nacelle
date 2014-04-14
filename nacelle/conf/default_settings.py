@@ -45,5 +45,8 @@ JINJA_GLOBALS = {'uri_for': webapp2.uri_for, 'logout_url': users.create_logout_u
 TRANSLATIONS_PATH = os.path.join(ROOT_DIR, 'translations')
 TRANSLATIONS_SELECTOR = 'nacelle.core.utils.i18n.get_locale'
 
+# Taskqueue that should be used to send mail asynchronously
+EMAIL_QUEUE = 'default'
+
 # This setting exists purely for testing purposes
 TEST_SETTING = '12345'

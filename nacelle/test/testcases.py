@@ -7,6 +7,7 @@ from unittest import TestCase
 
 # third-party imports
 from google.appengine.ext import testbed
+from nacelle.conf import settings
 
 
 class NacelleTestCase(TestCase):
@@ -48,12 +49,28 @@ class NacelleTestCase(TestCase):
                 return
 
     def _pre_setup(self):
-        # init testbed so we can use stubs to simulate the sandboxed
-        # environment
+        # init testbed so we can use stubs to simulate the sandboxed environment
         self.testbed = testbed.Testbed()
         self.testbed.activate()
+
         # INIT ALL THE STUBS!
-        self.testbed.init_all_stubs()
+        self.testbed.init_app_identity_stub()
+        self.testbed.init_blobstore_stub()
+        self.testbed.init_capability_stub()
+        self.testbed.init_channel_stub()
+        self.testbed.init_datastore_v3_stub()
+        self.testbed.init_files_stub()
+        self.testbed.init_images_stub()
+        self.testbed.init_logservice_stub()
+        self.testbed.init_mail_stub()
+        self.testbed.init_memcache_stub()
+        self.testbed.init_taskqueue_stub(root_path=settings.ROOT_DIR)
+        self.testbed.init_urlfetch_stub()
+        self.testbed.init_user_stub()
+        self.testbed.init_xmpp_stub()
+
+        self.taskq_stub = self.testbed.get_stub(testbed.TASKQUEUE_SERVICE_NAME)
+        self.mail_stub = self.testbed.get_stub(testbed.MAIL_SERVICE_NAME)
 
     def _post_teardown(self):
         # clean up the testbed after each test is run
