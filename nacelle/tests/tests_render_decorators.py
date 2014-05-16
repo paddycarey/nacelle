@@ -11,7 +11,6 @@ from google.appengine.ext import ndb
 
 # local imports
 from nacelle.conf import settings
-from nacelle.core.decorators import render_handlebars
 from nacelle.core.decorators import render_jinja2
 from nacelle.core.decorators import render_json
 from nacelle.test.testcases import NacelleTestCase
@@ -83,24 +82,8 @@ def r_json_err(request):
     return webapp2.abort(405)
 
 
-@render_handlebars('index.html')
-def r_handlebars(request):
-    """Test fixture to allow testing of @render_handlebars decorator
-    """
-    return {'rendered_with': 'Handlebars'}
-
-
-@render_handlebars('index.html')
-def r_handlebars_r(request):
-    """Test fixture to allow testing of @render_handlebars decorator
-    """
-    return webapp2.Response('success')
-
-
 # Define our WSGI app so GAE can run it
 routes = [
-    ('/r_handlebars', r_handlebars),
-    ('/r_handlebars_r', r_handlebars_r),
     ('/r_jinja2', r_jinja2),
     ('/r_jinja2_r', r_jinja2_r),
     ('/r_json', r_json),
@@ -118,23 +101,6 @@ wsgi = webapp2.WSGIApplication(routes, debug=True, config={
 # attach dispatcher and error_handler to the WSGI app
 dispatcher = webapp2.import_string(settings.DISPATCHER_MODULE)
 wsgi.router.set_dispatcher(dispatcher)
-
-
-class RenderHandlebarsDecoratorTests(NacelleTestCase):
-
-    def test_render_handlebars_existing_template(self):
-        """Test rendering a template with Handlebars (pybars)
-        """
-        response = wsgi.get_response('/r_handlebars')
-        self.assertEqual(200, response.status_int)
-        self.assertIn('<!DOCTYPE html>', response.body)
-
-    def test_render_handlebars_override_response(self):
-        """Test that a webapp2.Response is rendered when explicitly returned from a handlebars handler
-        """
-        response = wsgi.get_response('/r_handlebars_r')
-        self.assertEqual(200, response.status_int)
-        self.assertEqual('success', response.body)
 
 
 class RenderJinja2DecoratorTests(NacelleTestCase):
@@ -182,7 +148,7 @@ class RenderJsonDecoratorTests(NacelleTestCase):
         """
         response = wsgi.get_response('/r_json_err')
         self.assertEqual(405, response.status_int)
-        self.assertDictEqual({u'error': u'405 Method Not Allowed'}, json.loads(response.body))
+        self.assertDictEqual({u'error': u'405 Method Not Allowed', 'detail': None}, json.loads(response.body))
 
     def test_render_json_unencodable(self):
         """Test that an error response is correctly rendered when a JSON handler encounters an unserialisable object.

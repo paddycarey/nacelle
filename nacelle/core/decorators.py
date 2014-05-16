@@ -3,17 +3,18 @@ Simple function decorators for common tasks (rendering templates/json, making re
 """
 # third-party imports
 import json
+import logging
 import webapp2
 from google.appengine.api import taskqueue
 from google.appengine.api import users
 
 # local imports
-from nacelle.core.template.renderers import render_handlebars_template
+from nacelle.core.exception_handlers import report_to_sentry
 from nacelle.core.template.renderers import render_jinja2_template
 from nacelle.core.utils.encoder import ModelEncoder
 
 
-__all__ = ['render_handlebars', 'render_jinja2', 'render_json']
+__all__ = ['render_jinja2', 'render_json']
 
 
 def deferrable(queue_name):
@@ -33,25 +34,6 @@ def deferrable(queue_name):
                 return webapp2.Response('Task queued: %s' % request.path)
             # call the view function
             return view_method(request, *args, **kwargs)
-        return _arguments_wrapper
-    return _method_wrapper
-
-
-def render_handlebars(template_name):
-    """
-    Decorator that renders the decorated function with the given handlebars template.
-    """
-    def _method_wrapper(view_method):
-        def _arguments_wrapper(request, *args, **kwargs):
-            # call the view function
-            context = view_method(request, *args, **kwargs)
-            # if the view has returned a HttpResponse or subclass then return that directly
-            if issubclass(type(context), webapp2.Response):
-                return context
-            # load specified template and render it with the context
-            output = render_handlebars_template(template_name, context)
-            # return the rendered template wrapped in a webapp2 Response object
-            return webapp2.Response(output)
         return _arguments_wrapper
     return _method_wrapper
 
@@ -104,11 +86,16 @@ def render_json(view_method):
             else:
                 status = 200
         except webapp2.HTTPException as e:
-            context = {'error': "%d %s" % (e.code, e.title)}
+            context = {'error': "%d %s" % (e.code, e.title), 'detail': e.detail}
             status = e.code
+        except Exception as e:
+            logging.exception(e)
+            exc_id = report_to_sentry(request)
+            context = {'error': "500 Server Error", 'detail': exc_id}
+            status = 500
         if issubclass(type(context), webapp2.Response):
             return context
-        response = webapp2.Response(json.dumps(context, cls=ModelEncoder))
+        response = webapp2.Response(json.dumps(context, cls=ModelEncoder, indent=4))
         response.set_status(status)
         response.headers['Content-Type'] = 'application/json'
         return response
