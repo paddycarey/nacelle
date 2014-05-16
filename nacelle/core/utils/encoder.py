@@ -3,6 +3,7 @@ import datetime
 import json
 
 # third-party imports
+from google.appengine.api import datastore_types
 from google.appengine.ext import ndb
 
 
@@ -30,6 +31,10 @@ class ModelEncoder(json.JSONEncoder):
         # listify queries
         if isinstance(obj, ndb.Query):
             return list(obj.iter())
+
+        # serialize geopts
+        if isinstance(obj, datastore_types.GeoPt):
+            return ','.join([str(obj.lat), str(obj.lon)])
 
         # output dates/times in iso8601 format
         if isinstance(obj, (datetime.date, datetime.datetime)):
