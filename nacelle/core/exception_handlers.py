@@ -15,13 +15,7 @@ else:
     client = None
 
 
-def handle_500(request, response, exception):
-
-    """
-    Report any uncaught errors to sentry and let the user know something's gone
-    wrong
-    """
-
+def report_to_sentry(request):
     # build our error report
     error_report = {
         'method': request.method,
@@ -30,21 +24,30 @@ def handle_500(request, response, exception):
         'data': dict(request.POST),
         'headers': dict(request.headers),
         'env': dict((
-            ('REMOTE_ADDR', request.environ['REMOTE_ADDR']),
-            ('SERVER_NAME', request.environ['SERVER_NAME']),
-            ('SERVER_PORT', request.environ['SERVER_PORT']),
+            ('REMOTE_ADDR', request.environ.get('REMOTE_ADDR')),
+            ('SERVER_NAME', request.environ.get('SERVER_NAME')),
+            ('SERVER_PORT', request.environ.get('SERVER_PORT')),
         )),
     }
     interface = 'sentry.interfaces.Http'
+    return client.get_ident(client.captureException(data={interface: error_report}))
 
-    response.write('A server error occurred: ')
+
+def handle_500(request, response, exception):
+
+    """
+    Report any uncaught errors to sentry and let the user know something's gone
+    wrong
+    """
+
+    response.write('A server error occurred')
     response.set_status(500)
 
     if client is not None:
         try:
-            exc_id = client.get_ident(client.captureException(data={interface: error_report}))
+            exc_id = report_to_sentry(request)
             logging.error('Error reported to sentry: %s' % str(exc_id))
-            response.write(str(exc_id))
+            response.write(': ' + str(exc_id))
         except HTTPException:
             logging.warning('Unable to contact sentry server')
 
