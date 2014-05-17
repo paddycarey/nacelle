@@ -95,7 +95,8 @@ routes = [
 ]
 
 wsgi = webapp2.WSGIApplication(routes, debug=True, config={
-    'webapp2_extras.sessions': {'secret_key': 'xxxxxxxxxxxxxxxxxxxxxx'}
+    'webapp2_extras.sessions': {'secret_key': 'xxxxxxxxxxxxxxxxxxxxxx'},
+    'webapp2_extras.jinja2': {'template_path': 'tests/templates'},
 })
 
 # attach dispatcher and error_handler to the WSGI app

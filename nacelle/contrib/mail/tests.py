@@ -6,16 +6,24 @@ from __future__ import absolute_import
 
 # stdlib imports
 import base64
-import json
 
 # third-party imports
 import webapp2
-from nacelle.app import wsgi
 from nacelle.conf import settings
 from nacelle.test.testcases import NacelleTestCase
 
 # local imports
 from nacelle.contrib import mail
+from nacelle.contrib.mail import routes
+
+
+wsgi = webapp2.WSGIApplication(routes.ROUTES, debug=True, config={
+    'webapp2_extras.sessions': {'secret_key': 'xxxxxxxxxxxxxxxxxxxxxx'},
+})
+
+# attach dispatcher and error_handler to the WSGI app
+dispatcher = webapp2.import_string(settings.DISPATCHER_MODULE)
+wsgi.router.set_dispatcher(dispatcher)
 
 
 def _make_test_request(url, post_data=None, headers=None):
