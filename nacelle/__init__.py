@@ -3,4 +3,4 @@
 
 __author__ = 'Patrick Carey'
 __email__ = 'patrick@rehabstudio.com'
-__version__ = '0.1.0'
+__version__ = '0.2.0'

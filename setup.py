@@ -9,7 +9,7 @@ except ImportError:
 
 setup(
     name='nacelle',
-    version='0.1.0',
+    version='0.2.0',
     description='A lightweight Python framework (built on top of webapp2) for use on Google Appengine',
     long_description=open('README.rst').read(),
     author='Patrick Carey',
