@@ -8,7 +8,6 @@ except ImportError:
 
 
 readme = open('README.rst').read()
-history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 requirements = [
     # TODO: put package requirements here
@@ -22,7 +21,7 @@ setup(
     name='nacelle',
     version='0.1.0',
     description='A lightweight Python framework (built on top of webapp2) for use on Google Appengine',
-    long_description=readme + '\n\n' + history,
+    long_description=readme,
     author='Patrick Carey',
     author_email='patrick@rehabstudio.com',
     url='https://github.com/nacelle/nacelle',
