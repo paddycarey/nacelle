@@ -60,7 +60,8 @@ class NacelleTestCase(TestCase):
         self.testbed.init_channel_stub()
         self.testbed.init_datastore_v3_stub()
         self.testbed.init_files_stub()
-        self.testbed.init_images_stub()
+        # uncomment the below line to enable testing against the images API
+        # self.testbed.init_images_stub()
         self.testbed.init_logservice_stub()
         self.testbed.init_mail_stub()
         self.testbed.init_memcache_stub()
