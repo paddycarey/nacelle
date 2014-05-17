@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import find_packages
+from setuptools import setup
 
 
 setup(
@@ -15,9 +13,7 @@ setup(
     author='Patrick Carey',
     author_email='patrick@rehabstudio.com',
     url='https://github.com/nacelle/nacelle',
-    packages=[
-        'nacelle',
-    ],
+    packages=find_packages(),
     package_dir={'nacelle':
                  'nacelle'},
     include_package_data=True,
