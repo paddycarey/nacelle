@@ -2,14 +2,16 @@
 import logging
 from httplib import HTTPException
 
-# third-party imports
-from raven import Client
-
 # local imports
 from nacelle.conf import settings
 
 # check if sentry enabled
-if settings.SENTRY_DSN:
+try:
+    from raven import Client
+except ImportError:
+    Client = None
+
+if settings.SENTRY_DSN and Client is not None:
     client = Client(settings.SENTRY_DSN)
 else:
     client = None
@@ -30,7 +32,9 @@ def report_to_sentry(request):
         )),
     }
     interface = 'sentry.interfaces.Http'
-    return client.get_ident(client.captureException(data={interface: error_report}))
+    if client is not None:
+        return client.get_ident(client.captureException(data={interface: error_report}))
+    return None
 
 
 def handle_500(request, response, exception):
