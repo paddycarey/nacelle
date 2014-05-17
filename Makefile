@@ -14,6 +14,10 @@ dist: clean
 	python setup.py sdist
 	ls -lh dist/
 
+
+release: clean
+	python setup.py sdist upload
+
 test: clean
 	coverage erase
 	coverage run --source="nacelle" --omit="google_appengine/*,nacelle/vendor/*" nacelle/test/runner.py
