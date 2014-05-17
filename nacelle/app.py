@@ -6,18 +6,12 @@ from __future__ import absolute_import
 
 # stdlib imports
 import itertools
-import sys
 
 # third-party imports
 import webapp2
 
 # local imports
 from nacelle.conf import settings
-
-# add vendor folder to the path so that we can load the modules it contains
-sys.path.insert(0, settings.VENDOR_PATH)
-for add_path in settings.ADDITIONAL_VENDOR_PATHS:
-    sys.path.insert(0, add_path)
 
 # use webapp2's import_string function to lazily import required modules for
 # WSGI config
