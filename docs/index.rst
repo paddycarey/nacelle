@@ -29,7 +29,7 @@ nacelle is Free Software, released under the `MIT license
 
 
 Standing on the shoulders of giants
-===================================
+-----------------------------------
 
 nacelle wouldn't be possible without the hard work of others and the fantastic
 libraries upon which it builds. **If you have a problem with nacelle, and you
@@ -50,7 +50,8 @@ to cover only those bits of nacelle that differ significantly from webapp2,
 pointing back to the original webapp2 docs where appropriate.
 
 
-Contents:
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2
@@ -60,10 +61,3 @@ Contents:
    contributing
    authors
    history
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

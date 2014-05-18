@@ -43,7 +43,7 @@ dist: clean clean-build
 	ls -lh dist/
 
 docs: clean-docs
-	sphinx-apidoc -o docs/ nacelle
+	# sphinx-apidoc -o docs/ nacelle
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 
