@@ -46,3 +46,6 @@ EMAIL_QUEUE = 'default'
 
 # This setting exists purely for testing purposes
 TEST_SETTING = '12345'
+
+# Lockdown related settings
+LOCKDOWN_URL_EXCEPTIONS = ('',)

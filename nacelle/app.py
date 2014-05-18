@@ -15,7 +15,10 @@ from nacelle.conf import settings
 
 # use webapp2's import_string function to lazily import required modules for
 # WSGI config
-routes = webapp2.import_string(settings.ROUTES_MODULE)
+try:
+    routes = webapp2.import_string(settings.ROUTES_MODULE)
+except webapp2.ImportStringError:
+    routes = []
 dispatcher = webapp2.import_string(settings.DISPATCHER_MODULE)
 error_handler = webapp2.import_string(settings.ERROR_HANDLER_MODULE)
 secret_key_store = webapp2.import_string('nacelle.core.sessions.models.SecretKey')
