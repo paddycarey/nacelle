@@ -32,11 +32,6 @@ project_root = os.path.dirname(cwd)
 # version is used.
 sys.path.insert(0, project_root)
 
-# setup our appengine environment so we can import the libs we need for our tests,
-# we need to do this first so we can import the stubs from testbed
-from nacelle.test.environ import setup_environ
-setup_environ()
-
 import nacelle
 
 # -- General configuration ---------------------------------------------
