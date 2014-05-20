@@ -59,5 +59,5 @@ Contents
    getting_started
    user_guide/index
    contributing
-   authors
+   credits
    history
