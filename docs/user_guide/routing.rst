@@ -5,8 +5,11 @@ URL Routing
 The URL router is the central part of a nacelle application, mapping incoming
 URLs to the appropriate handlers.
 
-nacelle uses a single central ``routes`` file to configure all URL mappings.
-By default, nacelle looks for a ``ROUTES`` object (should be an iterable
+
+Routes Configuration
+--------------------
+
+By default, nacelle looks for ``ROUTES`` (should be an iterable
 containing ``webapp2.Route`` objects as in webapp2 itself) in the ``app``
 module. This location can be configured using nacelle's ``settings.py`` as
 such::
@@ -21,10 +24,33 @@ include the line::
     # Python dotted path to the routes for the app
     ROUTES_MODULE = 'apps.core.routes.routes'  # custom routes module
 
+
+Simple Routing
+--------------
+
 For the most part, **nacelle uses webapp2's routing infrastructure**, and you
 should consult `those docs
 <http://webapp-improved.appspot.com/guide/routing.html>`_ when you have any
 questions or issues.
+
+When a request comes in, the application will match the request path to find
+the corresponding handler. If no route matches, an ``HTTPException`` is raised
+with status code 404, and the WSGI application can handle it accordingly.
+
+As a simple example, assuming the default configuration, the following could
+be defined in `app.py` and would map 3 different URL patterns to 3 different
+request handlers::
+
+    ROUTES = [
+        webapp2.Route(r'/', handler=HomeHandler, name='home'),
+        webapp2.Route(r'/products', handler=ProductListHandler, name='product-list'),
+        webapp2.Route(r'/products/<product_id>', handler=ProductHandler, name='product'),
+    ]
+
+The first argument in the routes above is a URL template, the `handler`
+argument is the request handler to be used (can also be a string in dotted
+notation to be lazily imported when needed), and the `name` argument third is
+a name used to build a URI for that route.
 
 
 Multi-prefix routes
