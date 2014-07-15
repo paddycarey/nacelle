@@ -37,7 +37,7 @@ class ModelEncoder(json.JSONEncoder):
             return ','.join([str(obj.lat), str(obj.lon)])
 
         # output dates/times in iso8601 format
-        if isinstance(obj, (datetime.date, datetime.datetime)):
+        if isinstance(obj, (datetime.date, datetime.datetime, datetime.time)):
             return obj.isoformat()
 
         # Let the base class default method raise the TypeError
