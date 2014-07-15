@@ -52,6 +52,7 @@ class NacelleTestCase(TestCase):
         # init testbed so we can use stubs to simulate the sandboxed environment
         self.testbed = testbed.Testbed()
         self.testbed.activate()
+        self.testbed.setup_env(overwrite=True, APPLICATION_ID='_')
 
         # INIT ALL THE STUBS!
         self.testbed.init_app_identity_stub()
