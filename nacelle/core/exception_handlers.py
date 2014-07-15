@@ -37,6 +37,13 @@ def report_to_sentry(request):
     return None
 
 
+def handle_404(request, response, exception):
+    """Default handler for 404 errors
+    """
+    response.write('404 Not Found')
+    response.set_status(404)
+
+
 def handle_500(request, response, exception):
 
     """

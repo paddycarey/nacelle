@@ -32,7 +32,8 @@ ROUTES_MODULE = 'app.ROUTES'
 DISPATCHER_MODULE = 'nacelle.core.dispatcher.nacelle_dispatcher'
 
 # Python dotted path to the default dispatcher for the app
-ERROR_HANDLER_MODULE = 'nacelle.core.exception_handlers.handle_500'
+ERROR_HANDLER_MODULE_404 = 'nacelle.core.exception_handlers.handle_404'
+ERROR_HANDLER_MODULE_500 = 'nacelle.core.exception_handlers.handle_500'
 
 # variables/functions to inject into any jinja template
 JINJA_GLOBALS = {'uri_for': webapp2.uri_for, 'logout_url': users.create_logout_url}
@@ -46,6 +47,3 @@ EMAIL_QUEUE = 'default'
 
 # This setting exists purely for testing purposes
 TEST_SETTING = '12345'
-
-# Lockdown related settings
-LOCKDOWN_URL_EXCEPTIONS = ('',)

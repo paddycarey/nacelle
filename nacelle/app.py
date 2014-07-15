@@ -20,7 +20,8 @@ try:
 except webapp2.ImportStringError:
     routes = []
 dispatcher = webapp2.import_string(settings.DISPATCHER_MODULE)
-error_handler = webapp2.import_string(settings.ERROR_HANDLER_MODULE)
+error_handler_404 = webapp2.import_string(settings.ERROR_HANDLER_MODULE_404)
+error_handler_500 = webapp2.import_string(settings.ERROR_HANDLER_MODULE_500)
 secret_key_store = webapp2.import_string('nacelle.core.sessions.models.SecretKey')
 
 # some of nacelle's contrib apps have routes, so we need to make sure and
@@ -33,9 +34,7 @@ wsgi = webapp2.WSGIApplication(routes, debug=settings.DEBUG, config={
     'webapp2_extras.sessions': {
         'secret_key': secret_key_store.get_key(),
     },
-    'webapp2_extras.jinja2': {
-        'globals': settings.JINJA_GLOBALS,
-    },
+    'webapp2_extras.jinja2': settings.JINJA_SETTINGS,
     'webapp2_extras.i18n': {
         'translations_path': settings.TRANSLATIONS_PATH,
         'locale_selector': settings.TRANSLATIONS_SELECTOR,
@@ -44,4 +43,5 @@ wsgi = webapp2.WSGIApplication(routes, debug=settings.DEBUG, config={
 
 # attach dispatcher and error_handler to the WSGI app
 wsgi.router.set_dispatcher(dispatcher)
-wsgi.error_handlers[500] = error_handler
+wsgi.error_handlers[404] = error_handler_404
+wsgi.error_handlers[500] = error_handler_500
