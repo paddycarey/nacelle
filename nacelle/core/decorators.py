@@ -95,7 +95,7 @@ def render_json(view_method):
             status = 500
         if issubclass(type(context), webapp2.Response):
             return context
-        response = webapp2.Response(json.dumps(context, cls=ModelEncoder, indent=4))
+        response = webapp2.Response(json.dumps(context, cls=ModelEncoder))
         response.set_status(status)
         response.headers['Content-Type'] = 'application/json'
         return response
