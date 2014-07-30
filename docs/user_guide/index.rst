@@ -9,3 +9,5 @@ in the sections below.
    :maxdepth: 2
 
    routing
+   settings
+   http_basic_authentication
