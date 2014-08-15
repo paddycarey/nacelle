@@ -2,7 +2,6 @@
 """
 # marty mcfly imports
 from __future__ import absolute_import
-from __future__ import unicode_literals
 
 # third-party imports
 from google.appengine.api import mail

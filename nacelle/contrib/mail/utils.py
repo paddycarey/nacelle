@@ -2,8 +2,8 @@
 """
 # marty mcfly imports
 from __future__ import absolute_import
-from __future__ import unicode_literals
 
+# third-party imports
 from nacelle.core.template.renderers import render_jinja2_template
 
 

@@ -2,7 +2,6 @@
 """
 # marty mcfly imports
 from __future__ import absolute_import
-from __future__ import unicode_literals
 
 # third-party imports
 import webapp2
