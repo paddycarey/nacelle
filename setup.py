@@ -7,7 +7,7 @@ from setuptools import setup
 
 setup(
     name='nacelle',
-    version='0.4.0',
+    version='0.4.1',
     description='A lightweight Python framework (built on top of webapp2) for use on Google Appengine',
     long_description=open('README.rst').read(),
     author='Patrick Carey',

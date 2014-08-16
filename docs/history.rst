@@ -4,6 +4,13 @@ History
 -------
 
 
+0.4.1 (2014-08-16)
+++++++++++++++++++
+
+* Minor bugfix release
+* Added missing default setting.
+
+
 0.4.0 (2014-08-15)
 ++++++++++++++++++
 
