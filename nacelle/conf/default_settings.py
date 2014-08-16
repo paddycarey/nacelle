@@ -35,8 +35,10 @@ DISPATCHER_MODULE = 'nacelle.core.dispatcher.nacelle_dispatcher'
 ERROR_HANDLER_MODULE_404 = 'nacelle.core.exception_handlers.handle_404'
 ERROR_HANDLER_MODULE_500 = 'nacelle.core.exception_handlers.handle_500'
 
-# variables/functions to inject into any jinja template
-JINJA_GLOBALS = {'uri_for': webapp2.uri_for, 'logout_url': users.create_logout_url}
+# default Jinja2 settings.
+JINJA_SETTINGS = {
+    'globals': {'uri_for': webapp2.uri_for, 'logout_url': users.create_logout_url},
+}
 
 # i18n related settings
 TRANSLATIONS_PATH = os.path.join(ROOT_DIR, 'translations')
